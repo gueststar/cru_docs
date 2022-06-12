@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en" style="background: var(--bs-dark);">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+<link href="bootstrap.min.css" rel="stylesheet">
+<title>cru manual</title>
+</head>
+<body style="background-color: var(--bs-dark);color: var(--bs-white);margin: 40px 0px;">
+<div class="container" style="/*background: var(--bs-gradient);*/">
+<div class="row">
+<div class="col-5 col-sm-5 col-md-4" style="height: 32px;"><h5 style="color: var(--bs-gray);">CRU_FUNCTION_TYPES (7)</h5></div>
+<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">CRU MANUAL</h5></div>
+<div class="col-5 col-sm-5 col-md-4"><h5 class="text-end" style="color: var(--bs-gray);">CRU_FUNCTION_TYPES (7)</h5></div>
+</div><div><p></p></div>
+<h6 style="color: #ff5c5c;">NAME</h6>
+<p style="margin: 0px 40px 16px;">
+cru_function_types - function types defined and used by the cru library
+</p>
+<h6 style="color: #ff5c5c;">SYNOPSIS</h6>
+<p style="margin: 0px 40px 16px;" class="font-monospace">
+#include &lt;cru/cru.h&gt;
+</p>
+<h6 style="color: #ff5c5c;">DESCRIPTION</h6>
+<p style="margin: 0px 40px 16px;">
+Many 
+<a class="font-monospace link-light" href="cru.html" style="color: #5c76ff;text-decoration: inherit">cru</a>
+library API functions have arguments that are pointers to C structs
+meant to be initialized in advance by the caller, with some of their
+fields initialized as pointers to user-defined "callback"
+functions. Each callback function is required to conform to one of the
+prototypes documented in this manual and to adhere to certain other
+calling conventions.
+</p>
+<p style="margin: 0px 40px 16px;">
+As an overview, callback functions can be classified as
+</p>
+<ul style="margin: 0px 40px 16px;"><li>
+utilities with various idiosyncratic mnemonic type signatures
+</li><li>
+operators following the
+naming convention
+<strong class="font-monospace" style="color: #45b74a;">cru_xop</strong>
+which return a pointer or a pointer-sized value
+</li><li>
+or predicates
+following the naming convention
+<strong class="font-monospace" style="color: #45b74a;">cru_xpred</strong>
+which return a condition flag in a signed integer
+</li></ul>
+<p style="margin: 0px 40px 16px;">
+where
+<strong class="font-monospace" style="color: #45b74a;">x</strong>
+can be one of
+<strong class="font-monospace" style="color: #45b74a;">n</strong>
+,
+<strong class="font-monospace" style="color: #45b74a;">u</strong>
+,
+<strong class="font-monospace" style="color: #45b74a;">b</strong>
+,
+<strong class="font-monospace" style="color: #45b74a;">t</strong>
+or 
+<strong class="font-monospace" style="color: #45b74a;">q</strong>
+for nullary, unary, binary, ternary or quarternary. All parameters to
+operators and predicates are untyped pointers or compatibly sized
+scalars cast as such, except for the last parameter, which is a
+pointer to a signed integer. The choice between scalars and pointers
+depends on how an application developer chooses to represent graphs
+and their properties.
+</p>
+<h6 style="color: #ff5c5c;">RETURN VALUE</h6>
+<p style="margin: 0px 40px 16px;">
+When operators with type definitions of the form
+<strong class="font-monospace" style="color: #45b74a;">cru_xop</strong>
+return a pointer to dynamic storage, convenience and probably
+performance are favored by having it allocate a new one on each
+invocation. However, applications may opt to trade performance for
+space efficiency by returning a pointer to a shared copy when sharing
+is possible. In this case, both the operator and the corresponding
+<a class="font-monospace link-light" href="cru_destructor.html" style="color: #5c76ff;text-decoration: inherit">cru_destructor</a>
+are responsible for managing a thread-safe reference counting scheme
+whose validity is not enforceable by
+<a class="font-monospace link-light" href="cru.html" style="color: #5c76ff;text-decoration: inherit">cru</a>
+using
+<strong class="font-monospace" style="color: #45b74a;">pthreads</strong>
+primitives or alternatives.
+</p>
+<h6 style="color: #ff5c5c;">ERRORS</h6>
+<p style="margin: 0px 40px 16px;">
+The integer pointer required as the last parameter to most callback
+functions, denotable as
+<em>err,</em>
+is usable by applications to report error conditions. For example, if
+a callback function needs to allocate memory for whatever reason but
+fails because
+<strong class="font-monospace" style="color: #45b74a;">malloc</strong>
+returns
+NULL,
+it
+can instead assign a value of
+<strong class="font-monospace" style="color: #45b74a;">ENOMEM</strong>
+to
+<em>*err</em>
+as defined in the system header file 
+<em>&lt;errno.h&gt;.</em>
+Any non-zero value assigned to
+<em>*err</em>
+causes an orderly termination of the API function that called the
+callback function and makes it report the same error condition to its
+caller. The application is not otherwise interrupted and can
+continue. Some further considerations are relevant:
+</p>
+<ul style="margin: 0px 40px 16px;"><li>
+This error reporting convention is not applicable to 
+<a class="font-monospace link-light" href="cru_hash.html" style="color: #5c76ff;text-decoration: inherit">cru_hash</a>
+functions whose only parameter is the datum to be hashed, but is
+applicable to all other callback functions.
+</li><li>
+The error parameter can be assumed to be zero on entry to any callback
+function, even if an error is concurrently or previously reported by
+another callback function. The error code need not be assigned if no
+error is to be reported. Assigning it zero is allowed and has no
+effect.
+</li><li>
+If multiple callback functions called concurrently by the same API
+function report conflicting errors, only the first one detetected is
+reported to the API function's caller. The order of detection is
+generally non-deterministic.
+</li><li>
+In addition reporting POSIX standard error codes such as those defined in
+<em>&lt;errno.h&gt;,</em>
+applications may use arbitrary non-clashing error codes for any
+purpose.  However, negative integers from -1 down to
+<strong class="font-monospace" style="color: #45b74a;">-CRU_MAX_FAIL</strong>
+inclusive are reserved. To avoid confusion, applications should avoid
+using them as error codes.
+</li></ul>
+<h6 style="color: #ff5c5c;">NOTES</h6>
+<p style="margin: 0px 40px 16px;">
+Some additional calling conventions concern mutability and concurrency.
+</p>
+<p style="margin: 0px 40px 16px;">
+A callback function passed a pointer to the heap should never free or
+deallocate it unless that function is specifically designated as a
+<a class="font-monospace link-light" href="cru_destructor.html" style="color: #5c76ff;text-decoration: inherit">cru_destructor</a>.
+In other words, callback functions other than destructors are expected
+only to "borrow" their arguments, not to "consume" them.
+</p>
+<p style="margin: 0px 40px 16px;">
+Similarly, callback functions passed vertices, edge labels, or vertex
+properties should treat them as read-only and not attempt to modify
+them in place for any reason other than reference counting as noted
+above, whose thread safety becomes the responsibility of the
+application. If the operand is a scalar value, modifying it has no
+persistent effect. If it is a pointer, modifying the memory it
+references (for example, by marking it "visited") may cause a data
+race or may non-deterministically expose inconsistent views of the
+graph to other worker threads. Graph mutation and traversal should be
+effected only according to the supported API.
+</p>
+<p style="margin: 0px 40px 16px;">
+If a callback function interacts with storage or other resources
+unrelated to
+<a class="font-monospace link-light" href="cru.html" style="color: #5c76ff;text-decoration: inherit">cru</a>
+(such as profilers or databases), it must do so in a thread-safe
+way, for example by using
+<strong class="font-monospace" style="color: #45b74a;">pthreads</strong>
+mutex locking mechanisms, under the assumption that the same code may
+be running in many threads. Thread-safe access without locking is
+provided only to graphs
+<a class="font-monospace link-light" href="cru.html" style="color: #5c76ff;text-decoration: inherit">cru</a>
+creates and only through the supported API.
+</p>
+<h6 style="color: #ff5c5c;">EXAMPLE</h6>
+<p style="margin: 0px 40px 16px;">
+This user-defined function tests whether two vertices coincide by
+pointer equality. The error parameter is required by the API even if
+not by the function.
+</p>
+<div style="margin: 0px 80px 12px;padding:20px 20px 8px;color:rgb(31,255,63);background-color:rgb(0,0,0)"><pre>
+int
+my_equality (cru_vertex x, cru_vertex y, int *err)
+
+{
+  return (x == y);
+}</pre></div>
+<p style="margin: 0px 40px 16px;">
+Cast to a
+<a class="font-monospace link-light" href="cru_bpred.html" style="color: #5c76ff;text-decoration: inherit">cru_bpred</a>,
+this function can be used in a declaration such as the following.
+</p>
+<div style="margin: 0px 80px 12px;padding:20px 20px 8px;color:rgb(31,255,63);background-color:rgb(0,0,0)"><pre>
+struct cru_order_s my_vertex_order = {
+   .equal = (cru_bpred) my_equality};</pre></div>
+<p style="margin: 0px 40px 16px;">
+</p>
+<h6 style="color: #ff5c5c;">FILES</h6>
+<p style="margin: 0px 40px 16px;">
+<em>/usr/local/include/cru/cru.h</em>
+</p>
+<p style="margin: 0px 40px 16px;">
+<em>/usr/local/include/cru/data_types.h</em>
+</p>
+<p style="margin: 0px 40px 16px;">
+<em>/usr/local/include/cru/function_types.h</em>
+</p>
+<p style="margin: 0px 40px 16px;">
+<em>/usr/local/include/cru/error_codes.h</em>
+</p>
+<h6 style="color: #ff5c5c;">SEE ALSO</h6>
+<p style="margin: 0px 40px 16px;">
+<a class="font-monospace link-light" href="cru.html" style="color: #5c76ff;text-decoration: inherit">cru</a>,
+<a class="font-monospace link-light" href="cru_bop.html" style="color: #5c76ff;text-decoration: inherit">cru_bop</a>,
+<a class="font-monospace link-light" href="cru_bpred.html" style="color: #5c76ff;text-decoration: inherit">cru_bpred</a>,
+<a class="font-monospace link-light" href="cru_builder.html" style="color: #5c76ff;text-decoration: inherit">cru_builder</a>,
+<a class="font-monospace link-light" href="cru_built.html" style="color: #5c76ff;text-decoration: inherit">cru_built</a>,
+<a class="font-monospace link-light" href="cru_cbop.html" style="color: #5c76ff;text-decoration: inherit">cru_cbop</a>,
+<a class="font-monospace link-light" href="cru_classifier.html" style="color: #5c76ff;text-decoration: inherit">cru_classifier</a>,
+<a class="font-monospace link-light" href="cru_class_of.html" style="color: #5c76ff;text-decoration: inherit">cru_class_of</a>,
+<a class="font-monospace link-light" href="cru_class_size.html" style="color: #5c76ff;text-decoration: inherit">cru_class_size</a>,
+<a class="font-monospace link-light" href="cru_composed.html" style="color: #5c76ff;text-decoration: inherit">cru_composed</a>,
+<a class="font-monospace link-light" href="cru_composer.html" style="color: #5c76ff;text-decoration: inherit">cru_composer</a>,
+<a class="font-monospace link-light" href="cru_connect.html" style="color: #5c76ff;text-decoration: inherit">cru_connect</a>,
+<a class="font-monospace link-light" href="cru_connector.html" style="color: #5c76ff;text-decoration: inherit">cru_connector</a>,
+<a class="font-monospace link-light" href="cru_cqop.html" style="color: #5c76ff;text-decoration: inherit">cru_cqop</a>,
+<a class="font-monospace link-light" href="cru_crossed.html" style="color: #5c76ff;text-decoration: inherit">cru_crossed</a>,
+<a class="font-monospace link-light" href="cru_crosser.html" style="color: #5c76ff;text-decoration: inherit">cru_crosser</a>,
+<a class="font-monospace link-light" href="cru_ctop.html" style="color: #5c76ff;text-decoration: inherit">cru_ctop</a>,
+<a class="font-monospace link-light" href="cru_ctop_pair.html" style="color: #5c76ff;text-decoration: inherit">cru_ctop_pair</a>,
+<a class="font-monospace link-light" href="cru_ctop_quad.html" style="color: #5c76ff;text-decoration: inherit">cru_ctop_quad</a>,
+<a class="font-monospace link-light" href="cru_data_types.html" style="color: #5c76ff;text-decoration: inherit">cru_data_types</a>,
+<a class="font-monospace link-light" href="cru_deduplicated.html" style="color: #5c76ff;text-decoration: inherit">cru_deduplicated</a>,
+<a class="font-monospace link-light" href="cru_destructor.html" style="color: #5c76ff;text-decoration: inherit">cru_destructor</a>,
+<a class="font-monospace link-light" href="cru_destructor_pair.html" style="color: #5c76ff;text-decoration: inherit">cru_destructor_pair</a>,
+<a class="font-monospace link-light" href="cru_edge_count.html" style="color: #5c76ff;text-decoration: inherit">cru_edge_count</a>,
+<a class="font-monospace link-light" href="cru_fabricated.html" style="color: #5c76ff;text-decoration: inherit">cru_fabricated</a>,
+<a class="font-monospace link-light" href="cru_fabricator.html" style="color: #5c76ff;text-decoration: inherit">cru_fabricator</a>,
+<a class="font-monospace link-light" href="cru_filter.html" style="color: #5c76ff;text-decoration: inherit">cru_filter</a>,
+<a class="font-monospace link-light" href="cru_filtered.html" style="color: #5c76ff;text-decoration: inherit">cru_filtered</a>,
+<a class="font-monospace link-light" href="cru_fold.html" style="color: #5c76ff;text-decoration: inherit">cru_fold</a>,
+<a class="font-monospace link-light" href="cru_free_kill_switch.html" style="color: #5c76ff;text-decoration: inherit">cru_free_kill_switch</a>,
+<a class="font-monospace link-light" href="cru_free_later.html" style="color: #5c76ff;text-decoration: inherit">cru_free_later</a>,
+<a class="font-monospace link-light" href="cru_free_now.html" style="color: #5c76ff;text-decoration: inherit">cru_free_now</a>,
+<a class="font-monospace link-light" href="cru_free_partition.html" style="color: #5c76ff;text-decoration: inherit">cru_free_partition</a>,
+<a class="font-monospace link-light" href="cru_hash.html" style="color: #5c76ff;text-decoration: inherit">cru_hash</a>,
+<a class="font-monospace link-light" href="cru_induced.html" style="color: #5c76ff;text-decoration: inherit">cru_induced</a>,
+<a class="font-monospace link-light" href="cru_inducer.html" style="color: #5c76ff;text-decoration: inherit">cru_inducer</a>,
+<a class="font-monospace link-light" href="cru_kernel.html" style="color: #5c76ff;text-decoration: inherit">cru_kernel</a>,
+<a class="font-monospace link-light" href="cru_kill.html" style="color: #5c76ff;text-decoration: inherit">cru_kill</a>,
+<a class="font-monospace link-light" href="cru_mapreduced.html" style="color: #5c76ff;text-decoration: inherit">cru_mapreduced</a>,
+<a class="font-monospace link-light" href="cru_mapreducer.html" style="color: #5c76ff;text-decoration: inherit">cru_mapreducer</a>,
+<a class="font-monospace link-light" href="cru_merged.html" style="color: #5c76ff;text-decoration: inherit">cru_merged</a>,
+<a class="font-monospace link-light" href="cru_merger.html" style="color: #5c76ff;text-decoration: inherit">cru_merger</a>,
+<a class="font-monospace link-light" href="cru_mutated.html" style="color: #5c76ff;text-decoration: inherit">cru_mutated</a>,
+<a class="font-monospace link-light" href="cru_mutator.html" style="color: #5c76ff;text-decoration: inherit">cru_mutator</a>,
+<a class="font-monospace link-light" href="cru_new_kill_switch.html" style="color: #5c76ff;text-decoration: inherit">cru_new_kill_switch</a>,
+<a class="font-monospace link-light" href="cru_nop.html" style="color: #5c76ff;text-decoration: inherit">cru_nop</a>,
+<a class="font-monospace link-light" href="cru_order.html" style="color: #5c76ff;text-decoration: inherit">cru_order</a>,
+<a class="font-monospace link-light" href="cru_order_pair.html" style="color: #5c76ff;text-decoration: inherit">cru_order_pair</a>,
+<a class="font-monospace link-light" href="cru_partition_of.html" style="color: #5c76ff;text-decoration: inherit">cru_partition_of</a>,
+<a class="font-monospace link-light" href="cru_plan.html" style="color: #5c76ff;text-decoration: inherit">cru_plan</a>,
+<a class="font-monospace link-light" href="cru_postponed.html" style="color: #5c76ff;text-decoration: inherit">cru_postponed</a>,
+<a class="font-monospace link-light" href="cru_postponer.html" style="color: #5c76ff;text-decoration: inherit">cru_postponer</a>,
+<a class="font-monospace link-light" href="cru_prop.html" style="color: #5c76ff;text-decoration: inherit">cru_prop</a>,
+<a class="font-monospace link-light" href="cru_prop_pair.html" style="color: #5c76ff;text-decoration: inherit">cru_prop_pair</a>,
+<a class="font-monospace link-light" href="cru_pruner.html" style="color: #5c76ff;text-decoration: inherit">cru_pruner</a>,
+<a class="font-monospace link-light" href="cru_qop.html" style="color: #5c76ff;text-decoration: inherit">cru_qop</a>,
+<a class="font-monospace link-light" href="cru_qpred.html" style="color: #5c76ff;text-decoration: inherit">cru_qpred</a>,
+<a class="font-monospace link-light" href="cru_sig.html" style="color: #5c76ff;text-decoration: inherit">cru_sig</a>,
+<a class="font-monospace link-light" href="cru_split.html" style="color: #5c76ff;text-decoration: inherit">cru_split</a>,
+<a class="font-monospace link-light" href="cru_splitter.html" style="color: #5c76ff;text-decoration: inherit">cru_splitter</a>,
+<a class="font-monospace link-light" href="cru_strerror.html" style="color: #5c76ff;text-decoration: inherit">cru_strerror</a>,
+<a class="font-monospace link-light" href="cru_stretch.html" style="color: #5c76ff;text-decoration: inherit">cru_stretch</a>,
+<a class="font-monospace link-light" href="cru_stretched.html" style="color: #5c76ff;text-decoration: inherit">cru_stretched</a>,
+<a class="font-monospace link-light" href="cru_stretcher.html" style="color: #5c76ff;text-decoration: inherit">cru_stretcher</a>,
+<a class="font-monospace link-light" href="cru_subconnector.html" style="color: #5c76ff;text-decoration: inherit">cru_subconnector</a>,
+<a class="font-monospace link-light" href="cru_top.html" style="color: #5c76ff;text-decoration: inherit">cru_top</a>,
+<a class="font-monospace link-light" href="cru_tpred.html" style="color: #5c76ff;text-decoration: inherit">cru_tpred</a>,
+<a class="font-monospace link-light" href="cru_united.html" style="color: #5c76ff;text-decoration: inherit">cru_united</a>,
+<a class="font-monospace link-light" href="cru_uop.html" style="color: #5c76ff;text-decoration: inherit">cru_uop</a>,
+<a class="font-monospace link-light" href="cru_vertex_count.html" style="color: #5c76ff;text-decoration: inherit">cru_vertex_count</a>,
+<a class="font-monospace link-light" href="cru_zone.html" style="color: #5c76ff;text-decoration: inherit">cru_zone</a>
+</p>
+<h6 style="color: #ff5c5c;">AUTHOR</h6>
+<p style="margin: 0px 40px 16px;">
+Dennis Furey 
+(<a class="font-monospace link-light" href="mailto:milonga@delayinsensitive.com" style="color: #5c76ff;text-decoration: inherit;">milonga@delayinsensitive.com</a>)
+</p>
+<h6 style="color: #ff5c5c;">PROJECT PAGE</h6>
+<p style="margin: 0px 40px 16px;">
+<a class="font-monospace link-light" href="https://github.com/gueststar/cru" style="color: #5c76ff;text-decoration: inherit;">https://github.com/gueststar/cru</a>
+</p>
+<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.1.0</h5></div>
+<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">June 12, 2022</h5></div>
+<div class="col-5 col-sm-5 col-md-4"><h5 class="text-end" style="color: var(--bs-gray);">CRU_FUNCTION_TYPES (7)</h5></div></div>
+</body>

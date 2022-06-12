@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en" style="background: var(--bs-dark);">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+<link href="bootstrap.min.css" rel="stylesheet">
+<title>cru manual</title>
+</head>
+<body style="background-color: var(--bs-dark);color: var(--bs-white);margin: 40px 0px;">
+<div class="container" style="/*background: var(--bs-gradient);*/">
+<div class="row">
+<div class="col-5 col-sm-5 col-md-4" style="height: 32px;"><h5 style="color: var(--bs-gray);">CRU_FOLD (7)</h5></div>
+<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">CRU MANUAL</h5></div>
+<div class="col-5 col-sm-5 col-md-4"><h5 class="text-end" style="color: var(--bs-gray);">CRU_FOLD (7)</h5></div>
+</div><div><p></p></div>
+<h6 style="color: #ff5c5c;">NAME</h6>
+<p style="margin: 0px 40px 16px;">
+cru_fold - specification for operating on a set of operands
+</p>
+<h6 style="color: #ff5c5c;">SYNOPSIS</h6>
+<p style="margin: 0px 40px 16px;" class="font-monospace">
+#include &lt;cru/cru.h&gt;
+</p><p style="margin: 0px 40px 16px;" class="font-monospace">
+typedef struct
+<a class="font-monospace link-light" href="cru_fold.html" style="color: #5c76ff;text-decoration: inherit">cru_fold_s</a>
+<br>
+{
+<br>
+<a class="font-monospace link-light" href="cru_top.html" style="color: #5c76ff;text-decoration: inherit">&ensp;&ensp;&ensp;cru_top</a>
+<strong class="font-monospace" style="color: #45b74a;">map</strong>;
+<br>
+<a class="font-monospace link-light" href="cru_bop.html" style="color: #5c76ff;text-decoration: inherit">&ensp;&ensp;&ensp;cru_bop</a>
+<strong class="font-monospace" style="color: #45b74a;">reduction</strong>;
+<br>
+<a class="font-monospace link-light" href="cru_nop.html" style="color: #5c76ff;text-decoration: inherit">&ensp;&ensp;&ensp;cru_nop</a>
+<strong class="font-monospace" style="color: #45b74a;">vacuous_case</strong>;
+<br>
+<a class="font-monospace link-light" href="cru_destructor.html" style="color: #5c76ff;text-decoration: inherit">&ensp;&ensp;&ensp;cru_destructor</a>
+<strong class="font-monospace" style="color: #45b74a;">r_free</strong>;
+<br>
+<a class="font-monospace link-light" href="cru_destructor.html" style="color: #5c76ff;text-decoration: inherit">&ensp;&ensp;&ensp;cru_destructor</a>
+<strong class="font-monospace" style="color: #45b74a;">m_free</strong>;
+<br>
+} *<a class="font-monospace link-light" href="cru_fold.html" style="color: #5c76ff;text-decoration: inherit">cru_fold</a>;
+</p>
+<h6 style="color: #ff5c5c;">DESCRIPTION</h6>
+<p style="margin: 0px 40px 16px;">
+With each field in a
+<a class="font-monospace link-light" href="cru_fold.html" style="color: #5c76ff;text-decoration: inherit">cru_fold</a>
+structure pointing to a user-defined function of the indicated
+type, applications pass it to various
+<a class="font-monospace link-light" href="cru.html" style="color: #5c76ff;text-decoration: inherit">cru</a>
+library functions that use it to compute a user-defined result from
+a set of arbitrarily many edge labels, vertices, or properties in a
+graph.
+</p>
+<p style="margin: 0px 40px 16px;">
+There are two main ways of organizing the computation. The simpler
+way starts with the
+<strong class="font-monospace" style="color: #45b74a;">map</strong>
+function being applied to every member of the set of operands. Then
+the
+<strong class="font-monospace" style="color: #45b74a;">reduction</strong>
+is applied to pairs of result values returned by the
+<strong class="font-monospace" style="color: #45b74a;">map</strong>
+if there are more than one, which are discarded afterwards. Then the
+<strong class="font-monospace" style="color: #45b74a;">reduction</strong>
+is further applied to pairs of results obtained by previous reductions
+if any, which are also discarded. Sufficiently many reductions are
+evaluated with intermediate results discarded until only a single
+result remains.
+</p>
+<p style="margin: 0px 40px 16px;">
+In the other way of organizing the computation, the
+<strong class="font-monospace" style="color: #45b74a;">map</strong>
+is also applied initially to every member of the set, and in addition, the
+<strong class="font-monospace" style="color: #45b74a;">vacuous_case</strong>
+is evaluated. If there are any operands in the set, the
+<strong class="font-monospace" style="color: #45b74a;">reduction</strong>
+is then applied to the pair of a
+<strong class="font-monospace" style="color: #45b74a;">map</strong>
+result as its left operand and the
+<strong class="font-monospace" style="color: #45b74a;">vacuous_case</strong>
+result as its right, both of which are discarded.
+While any unused
+<strong class="font-monospace" style="color: #45b74a;">map</strong>
+results remain, the
+<strong class="font-monospace" style="color: #45b74a;">reduction</strong>
+is evaluated with one of them as its left operand
+and the previous
+<strong class="font-monospace" style="color: #45b74a;">reduction</strong>
+result as its right, both of which are discarded.
+The result overall is that of the
+<strong class="font-monospace" style="color: #45b74a;">vacuous_case</strong>
+if the set of operands is empty, or last
+<strong class="font-monospace" style="color: #45b74a;">reduction</strong>
+evaluated otherwise.
+</p>
+<p style="margin: 0px 40px 16px;">
+Applications select the simpler way by initializing the
+<strong class="font-monospace" style="color: #45b74a;">vacuous_case</strong>
+field to
+NULL
+and the other way by initializing it as a pointer to a user-defined
+nullary operator. Some differences necessarily follow.
+</p>
+<ul style="margin: 0px 40px 16px;"><li>
+The simpler way is defined only for non-empty sets of operands.
+</li><li>
+The simpler way requires the results of the
+<strong class="font-monospace" style="color: #45b74a;">map</strong>
+and the
+<strong class="font-monospace" style="color: #45b74a;">reduction</strong>
+to have identical types.
+</li><li>
+The simpler way requires both operands of the
+<strong class="font-monospace" style="color: #45b74a;">reduction</strong>
+to have the same type as its result.
+</li></ul>
+<p style="margin: 0px 40px 16px;">
+In the alternative:
+</p>
+<ul style="margin: 0px 40px 16px;"><li>
+The result overall for any empty set of operands is given by the
+<strong class="font-monospace" style="color: #45b74a;">vacuous_case</strong>.
+</li><li>
+The
+<strong class="font-monospace" style="color: #45b74a;">reduction</strong>
+and the
+<strong class="font-monospace" style="color: #45b74a;">vacuous_case</strong>
+must have identical result types.
+</li><li>
+Only the right operand of the
+<strong class="font-monospace" style="color: #45b74a;">reduction</strong>
+must match its result type.
+</li><li>
+The
+<strong class="font-monospace" style="color: #45b74a;">map</strong>
+can have any result type, but the left operand type of the
+<strong class="font-monospace" style="color: #45b74a;">reduction</strong>
+must match it.
+</li></ul>
+<p style="margin: 0px 40px 16px;">
+In either case, functions given by the two destructor fields reclaim
+the discarded intermediate results. The
+<strong class="font-monospace" style="color: #45b74a;">r_free</strong>
+function reclaims results returned by the
+<strong class="font-monospace" style="color: #45b74a;">reduction</strong>,
+and the
+<strong class="font-monospace" style="color: #45b74a;">m_free</strong>
+function reclaims results returned by the
+<strong class="font-monospace" style="color: #45b74a;">map</strong>.
+These destructors must be suitable for their operand types. Either or
+both of these fields can be set to
+NULL,
+in which case
+<a class="font-monospace link-light" href="cru.html" style="color: #5c76ff;text-decoration: inherit">cru</a>
+infers that the corresponding result type is a scalar in no need of
+reclamation. Some other inferences are then possible:
+</p>
+<ul style="margin: 0px 40px 16px;"><li>
+If both the
+<strong class="font-monospace" style="color: #45b74a;">m_free</strong>
+and the
+<strong class="font-monospace" style="color: #45b74a;">map</strong>
+fields are
+NULL,
+then
+<a class="font-monospace link-light" href="cru.html" style="color: #5c76ff;text-decoration: inherit">cru</a>
+infers a default
+<strong class="font-monospace" style="color: #45b74a;">map</strong>
+operator that unconditionally returns its middle operand.
+</li><li>
+If both the
+<strong class="font-monospace" style="color: #45b74a;">r_free</strong>
+and the
+<strong class="font-monospace" style="color: #45b74a;">reduction</strong>
+fields are
+NULL,
+then
+<a class="font-monospace link-light" href="cru.html" style="color: #5c76ff;text-decoration: inherit">cru</a>
+infers a default
+<strong class="font-monospace" style="color: #45b74a;">reduction</strong>
+operator that returns the lesser of its two operands
+cast as unsigned integers.
+</li></ul>
+<h6 style="color: #ff5c5c;">ERRORS</h6>
+<p style="margin: 0px 40px 16px;">
+It is an error to omit a destructor when the corresponding result is
+dynamically allocated. This error is not detectable by
+<a class="font-monospace link-light" href="cru.html" style="color: #5c76ff;text-decoration: inherit">cru</a>
+but may cause memory leaks. Other errors are reportable by whatever
+API function is being called under these circumstances:
+</p>
+<p style="margin: -5px 40px -3px;"><strong class="font-monospace" style="color: #45b74a;">CRU_UNDVAC</strong></p><p style="margin: 0px 80px 16px;">
+Evaluation is requested on an empty set of operands but no
+<strong class="font-monospace" style="color: #45b74a;">vacuous_case</strong>
+is defined.
+</p><p style="margin: -5px 40px -3px;"><strong class="font-monospace" style="color: #45b74a;">CRU_UNDMAP</strong></p><p style="margin: 0px 80px 16px;">
+A
+<strong class="font-monospace" style="color: #45b74a;">map</strong>
+operator is required but not specified or inferrable.
+</p><p style="margin: -5px 40px -3px;"><strong class="font-monospace" style="color: #45b74a;">CRU_UNDRED</strong></p><p style="margin: 0px 80px 16px;">
+A
+<strong class="font-monospace" style="color: #45b74a;">reduction</strong>
+operator is required but not specified or inferrable.
+</p><p style="margin: -5px 40px -3px;"><strong class="font-monospace" style="color: #45b74a;">CRU_TPCMPR</strong></p><p style="margin: 0px 80px 16px;">
+No
+<strong class="font-monospace" style="color: #45b74a;">vacuous_case</strong>
+is specified but the destructors differ,
+indicating that the
+<strong class="font-monospace" style="color: #45b74a;">map</strong>
+and
+<strong class="font-monospace" style="color: #45b74a;">reduction</strong>
+result types are incompatible.
+If the
+<a class="font-monospace link-light" href="cru_fold.html" style="color: #5c76ff;text-decoration: inherit">cru_fold</a>
+structure is the
+<strong class="font-monospace" style="color: #45b74a;">vertex</strong>
+field of a
+<a class="font-monospace link-light" href="cru_prop.html" style="color: #5c76ff;text-decoration: inherit">cru_prop</a>
+structure belonging to a
+<a class="font-monospace link-light" href="cru_mapreducer.html" style="color: #5c76ff;text-decoration: inherit">cru_mapreducer</a>
+top level structure,
+then this error is reported whenever the destructors differ,
+with or without a
+<strong class="font-monospace" style="color: #45b74a;">vacuous_case</strong>
+defined.
+</p>
+<p style="margin: 0px 40px 16px;">
+If neither destructor is specified because both result types are scalars,
+type conflicts are still an error but are not detected.
+</p>
+<h6 style="color: #ff5c5c;">NOTES</h6>
+<p style="margin: 0px 40px 16px;">
+The
+<a class="font-monospace link-light" href="cru_fold.html" style="color: #5c76ff;text-decoration: inherit">cru_fold</a>
+structure is part of the
+<a class="font-monospace link-light" href="cru_prop.html" style="color: #5c76ff;text-decoration: inherit">cru_prop</a>
+and
+<a class="font-monospace link-light" href="cru_kernel.html" style="color: #5c76ff;text-decoration: inherit">cru_kernel</a>
+derived structures,
+and the
+<a class="font-monospace link-light" href="cru_inducer.html" style="color: #5c76ff;text-decoration: inherit">cru_inducer</a>
+top level structure.
+</p>
+<p style="margin: 0px 40px 16px;">
+Applications should ensure that the vacuous case result is
+semantically appropriate for the reduction. For example, the sum of an
+empty set of numbers is zero, the product of an empty set of numbers
+is conventionally taken to be unity, etcetera.
+</p>
+<p style="margin: 0px 40px 16px;">
+There is no specified ordering among the operands to a reduction.
+Applications relying on stronger assumptions will likely fail
+intermittently or be broken completely by an eventual update to
+<a class="font-monospace link-light" href="cru.html" style="color: #5c76ff;text-decoration: inherit">cru</a>.
+To ensure deterministic results, the
+<strong class="font-monospace" style="color: #45b74a;">reduction</strong>
+<strong class="font-monospace" style="color: #45b74a;">r</strong>
+must satisfy
+<strong class="font-monospace" style="color: #45b74a;">r</strong>
+(
+<strong class="font-monospace" style="color: #45b74a;">x</strong>,
+<strong class="font-monospace" style="color: #45b74a;">r</strong>
+(
+<strong class="font-monospace" style="color: #45b74a;">y</strong>,
+<strong class="font-monospace" style="color: #45b74a;">z</strong>)&ensp;)
+=
+<strong class="font-monospace" style="color: #45b74a;">r</strong>
+(
+<strong class="font-monospace" style="color: #45b74a;">y</strong>,
+<strong class="font-monospace" style="color: #45b74a;">r</strong>
+(
+<strong class="font-monospace" style="color: #45b74a;">x</strong>,
+<strong class="font-monospace" style="color: #45b74a;">z</strong>)&ensp;)
+for
+<strong class="font-monospace" style="color: #45b74a;">map</strong>
+results
+<strong class="font-monospace" style="color: #45b74a;">x</strong>
+and
+<strong class="font-monospace" style="color: #45b74a;">y</strong>
+if there is a
+<strong class="font-monospace" style="color: #45b74a;">vacuous_case</strong>
+defined, or must be associative and commutative otherwise.
+</p>
+<h6 style="color: #ff5c5c;">EXAMPLE</h6>
+<p style="margin: 0px 40px 16px;">
+Given two user-defined functions as shown,
+</p>
+<div style="margin: 0px 80px 12px;padding:20px 20px 8px;color:rgb(31,255,63);background-color:rgb(0,0,0)"><pre>
+uintptr_t
+sum (uintptr_t l, uintptr_t r, int *err)
+{
+   return (l + r);
+}
+
+uintptr_t
+square (uintptr_t l, uintptr_t m, uintptr_t r, int *err)
+{
+   return (m * m);
+}</pre></div>
+<p style="margin: 0px 40px 16px;">
+this example declares the structure
+<strong class="font-monospace" style="color: #45b74a;">sum_of_squares</strong>
+of type
+<em>struct</em>
+<a class="font-monospace link-light" href="cru_fold.html" style="color: #5c76ff;text-decoration: inherit">cru_fold_s</a>
+to specify the computation of the sum of the squares of a non-empty
+set of numbers.
+</p>
+<div style="margin: 0px 80px 12px;padding:20px 20px 8px;color:rgb(31,255,63);background-color:rgb(0,0,0)"><pre>
+struct cru_fold_s sum_of_squares = {
+   .reduction = (cru_bop) sum,
+   .map = (cru_top) square};</pre></div>
+<p style="margin: 0px 40px 16px;">
+</p>
+<h6 style="color: #ff5c5c;">FILES</h6>
+<p style="margin: 0px 40px 16px;">
+<em>/usr/local/include/cru/function_types.h</em>
+</p>
+<p style="margin: 0px 40px 16px;">
+<em>/usr/local/include/cru/data_types.h</em>
+</p>
+<p style="margin: 0px 40px 16px;">
+<em>/usr/local/include/cru/error_codes.h</em>
+</p>
+<h6 style="color: #ff5c5c;">SEE ALSO</h6>
+<p style="margin: 0px 40px 16px;">
+<a class="font-monospace link-light" href="cru.html" style="color: #5c76ff;text-decoration: inherit">cru</a>,
+<a class="font-monospace link-light" href="cru_bop.html" style="color: #5c76ff;text-decoration: inherit">cru_bop</a>,
+<a class="font-monospace link-light" href="cru_bpred.html" style="color: #5c76ff;text-decoration: inherit">cru_bpred</a>,
+<a class="font-monospace link-light" href="cru_builder.html" style="color: #5c76ff;text-decoration: inherit">cru_builder</a>,
+<a class="font-monospace link-light" href="cru_built.html" style="color: #5c76ff;text-decoration: inherit">cru_built</a>,
+<a class="font-monospace link-light" href="cru_cbop.html" style="color: #5c76ff;text-decoration: inherit">cru_cbop</a>,
+<a class="font-monospace link-light" href="cru_classifier.html" style="color: #5c76ff;text-decoration: inherit">cru_classifier</a>,
+<a class="font-monospace link-light" href="cru_class_of.html" style="color: #5c76ff;text-decoration: inherit">cru_class_of</a>,
+<a class="font-monospace link-light" href="cru_class_size.html" style="color: #5c76ff;text-decoration: inherit">cru_class_size</a>,
+<a class="font-monospace link-light" href="cru_composed.html" style="color: #5c76ff;text-decoration: inherit">cru_composed</a>,
+<a class="font-monospace link-light" href="cru_composer.html" style="color: #5c76ff;text-decoration: inherit">cru_composer</a>,
+<a class="font-monospace link-light" href="cru_connect.html" style="color: #5c76ff;text-decoration: inherit">cru_connect</a>,
+<a class="font-monospace link-light" href="cru_connector.html" style="color: #5c76ff;text-decoration: inherit">cru_connector</a>,
+<a class="font-monospace link-light" href="cru_cqop.html" style="color: #5c76ff;text-decoration: inherit">cru_cqop</a>,
+<a class="font-monospace link-light" href="cru_crossed.html" style="color: #5c76ff;text-decoration: inherit">cru_crossed</a>,
+<a class="font-monospace link-light" href="cru_crosser.html" style="color: #5c76ff;text-decoration: inherit">cru_crosser</a>,
+<a class="font-monospace link-light" href="cru_ctop.html" style="color: #5c76ff;text-decoration: inherit">cru_ctop</a>,
+<a class="font-monospace link-light" href="cru_ctop_pair.html" style="color: #5c76ff;text-decoration: inherit">cru_ctop_pair</a>,
+<a class="font-monospace link-light" href="cru_ctop_quad.html" style="color: #5c76ff;text-decoration: inherit">cru_ctop_quad</a>,
+<a class="font-monospace link-light" href="cru_data_types.html" style="color: #5c76ff;text-decoration: inherit">cru_data_types</a>,
+<a class="font-monospace link-light" href="cru_deduplicated.html" style="color: #5c76ff;text-decoration: inherit">cru_deduplicated</a>,
+<a class="font-monospace link-light" href="cru_destructor.html" style="color: #5c76ff;text-decoration: inherit">cru_destructor</a>,
+<a class="font-monospace link-light" href="cru_destructor_pair.html" style="color: #5c76ff;text-decoration: inherit">cru_destructor_pair</a>,
+<a class="font-monospace link-light" href="cru_edge_count.html" style="color: #5c76ff;text-decoration: inherit">cru_edge_count</a>,
+<a class="font-monospace link-light" href="cru_fabricated.html" style="color: #5c76ff;text-decoration: inherit">cru_fabricated</a>,
+<a class="font-monospace link-light" href="cru_fabricator.html" style="color: #5c76ff;text-decoration: inherit">cru_fabricator</a>,
+<a class="font-monospace link-light" href="cru_filter.html" style="color: #5c76ff;text-decoration: inherit">cru_filter</a>,
+<a class="font-monospace link-light" href="cru_filtered.html" style="color: #5c76ff;text-decoration: inherit">cru_filtered</a>,
+<a class="font-monospace link-light" href="cru_free_kill_switch.html" style="color: #5c76ff;text-decoration: inherit">cru_free_kill_switch</a>,
+<a class="font-monospace link-light" href="cru_free_later.html" style="color: #5c76ff;text-decoration: inherit">cru_free_later</a>,
+<a class="font-monospace link-light" href="cru_free_now.html" style="color: #5c76ff;text-decoration: inherit">cru_free_now</a>,
+<a class="font-monospace link-light" href="cru_free_partition.html" style="color: #5c76ff;text-decoration: inherit">cru_free_partition</a>,
+<a class="font-monospace link-light" href="cru_function_types.html" style="color: #5c76ff;text-decoration: inherit">cru_function_types</a>,
+<a class="font-monospace link-light" href="cru_hash.html" style="color: #5c76ff;text-decoration: inherit">cru_hash</a>,
+<a class="font-monospace link-light" href="cru_induced.html" style="color: #5c76ff;text-decoration: inherit">cru_induced</a>,
+<a class="font-monospace link-light" href="cru_inducer.html" style="color: #5c76ff;text-decoration: inherit">cru_inducer</a>,
+<a class="font-monospace link-light" href="cru_kernel.html" style="color: #5c76ff;text-decoration: inherit">cru_kernel</a>,
+<a class="font-monospace link-light" href="cru_kill.html" style="color: #5c76ff;text-decoration: inherit">cru_kill</a>,
+<a class="font-monospace link-light" href="cru_mapreduced.html" style="color: #5c76ff;text-decoration: inherit">cru_mapreduced</a>,
+<a class="font-monospace link-light" href="cru_mapreducer.html" style="color: #5c76ff;text-decoration: inherit">cru_mapreducer</a>,
+<a class="font-monospace link-light" href="cru_merged.html" style="color: #5c76ff;text-decoration: inherit">cru_merged</a>,
+<a class="font-monospace link-light" href="cru_merger.html" style="color: #5c76ff;text-decoration: inherit">cru_merger</a>,
+<a class="font-monospace link-light" href="cru_mutated.html" style="color: #5c76ff;text-decoration: inherit">cru_mutated</a>,
+<a class="font-monospace link-light" href="cru_mutator.html" style="color: #5c76ff;text-decoration: inherit">cru_mutator</a>,
+<a class="font-monospace link-light" href="cru_new_kill_switch.html" style="color: #5c76ff;text-decoration: inherit">cru_new_kill_switch</a>,
+<a class="font-monospace link-light" href="cru_nop.html" style="color: #5c76ff;text-decoration: inherit">cru_nop</a>,
+<a class="font-monospace link-light" href="cru_order.html" style="color: #5c76ff;text-decoration: inherit">cru_order</a>,
+<a class="font-monospace link-light" href="cru_order_pair.html" style="color: #5c76ff;text-decoration: inherit">cru_order_pair</a>,
+<a class="font-monospace link-light" href="cru_partition_of.html" style="color: #5c76ff;text-decoration: inherit">cru_partition_of</a>,
+<a class="font-monospace link-light" href="cru_plan.html" style="color: #5c76ff;text-decoration: inherit">cru_plan</a>,
+<a class="font-monospace link-light" href="cru_postponed.html" style="color: #5c76ff;text-decoration: inherit">cru_postponed</a>,
+<a class="font-monospace link-light" href="cru_postponer.html" style="color: #5c76ff;text-decoration: inherit">cru_postponer</a>,
+<a class="font-monospace link-light" href="cru_prop.html" style="color: #5c76ff;text-decoration: inherit">cru_prop</a>,
+<a class="font-monospace link-light" href="cru_prop_pair.html" style="color: #5c76ff;text-decoration: inherit">cru_prop_pair</a>,
+<a class="font-monospace link-light" href="cru_pruner.html" style="color: #5c76ff;text-decoration: inherit">cru_pruner</a>,
+<a class="font-monospace link-light" href="cru_qop.html" style="color: #5c76ff;text-decoration: inherit">cru_qop</a>,
+<a class="font-monospace link-light" href="cru_qpred.html" style="color: #5c76ff;text-decoration: inherit">cru_qpred</a>,
+<a class="font-monospace link-light" href="cru_sig.html" style="color: #5c76ff;text-decoration: inherit">cru_sig</a>,
+<a class="font-monospace link-light" href="cru_split.html" style="color: #5c76ff;text-decoration: inherit">cru_split</a>,
+<a class="font-monospace link-light" href="cru_splitter.html" style="color: #5c76ff;text-decoration: inherit">cru_splitter</a>,
+<a class="font-monospace link-light" href="cru_strerror.html" style="color: #5c76ff;text-decoration: inherit">cru_strerror</a>,
+<a class="font-monospace link-light" href="cru_stretch.html" style="color: #5c76ff;text-decoration: inherit">cru_stretch</a>,
+<a class="font-monospace link-light" href="cru_stretched.html" style="color: #5c76ff;text-decoration: inherit">cru_stretched</a>,
+<a class="font-monospace link-light" href="cru_stretcher.html" style="color: #5c76ff;text-decoration: inherit">cru_stretcher</a>,
+<a class="font-monospace link-light" href="cru_subconnector.html" style="color: #5c76ff;text-decoration: inherit">cru_subconnector</a>,
+<a class="font-monospace link-light" href="cru_top.html" style="color: #5c76ff;text-decoration: inherit">cru_top</a>,
+<a class="font-monospace link-light" href="cru_tpred.html" style="color: #5c76ff;text-decoration: inherit">cru_tpred</a>,
+<a class="font-monospace link-light" href="cru_united.html" style="color: #5c76ff;text-decoration: inherit">cru_united</a>,
+<a class="font-monospace link-light" href="cru_uop.html" style="color: #5c76ff;text-decoration: inherit">cru_uop</a>,
+<a class="font-monospace link-light" href="cru_vertex_count.html" style="color: #5c76ff;text-decoration: inherit">cru_vertex_count</a>,
+<a class="font-monospace link-light" href="cru_zone.html" style="color: #5c76ff;text-decoration: inherit">cru_zone</a>
+</p>
+<h6 style="color: #ff5c5c;">AUTHOR</h6>
+<p style="margin: 0px 40px 16px;">
+Dennis Furey 
+(<a class="font-monospace link-light" href="mailto:milonga@delayinsensitive.com" style="color: #5c76ff;text-decoration: inherit;">milonga@delayinsensitive.com</a>)
+</p>
+<h6 style="color: #ff5c5c;">PROJECT PAGE</h6>
+<p style="margin: 0px 40px 16px;">
+<a class="font-monospace link-light" href="https://github.com/gueststar/cru" style="color: #5c76ff;text-decoration: inherit;">https://github.com/gueststar/cru</a>
+</p>
+<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.1.0</h5></div>
+<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">June 12, 2022</h5></div>
+<div class="col-5 col-sm-5 col-md-4"><h5 class="text-end" style="color: var(--bs-gray);">CRU_FOLD (7)</h5></div></div>
+</body>

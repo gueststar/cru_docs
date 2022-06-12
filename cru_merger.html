@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en" style="background: var(--bs-dark);">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+<link href="bootstrap.min.css" rel="stylesheet">
+<title>cru manual</title>
+</head>
+<body style="background-color: var(--bs-dark);color: var(--bs-white);margin: 40px 0px;">
+<div class="container" style="/*background: var(--bs-gradient);*/">
+<div class="row">
+<div class="col-5 col-sm-5 col-md-4" style="height: 32px;"><h5 style="color: var(--bs-gray);">CRU_MERGER (7)</h5></div>
+<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">CRU MANUAL</h5></div>
+<div class="col-5 col-sm-5 col-md-4"><h5 class="text-end" style="color: var(--bs-gray);">CRU_MERGER (7)</h5></div>
+</div><div><p></p></div>
+<h6 style="color: #ff5c5c;">NAME</h6>
+<p style="margin: 0px 40px 16px;">
+cru_merger - specification for simplifying a graph by equivalence
+</p>
+<h6 style="color: #ff5c5c;">SYNOPSIS</h6>
+<p style="margin: 0px 40px 16px;" class="font-monospace">
+#include &lt;cru/cru.h&gt;
+</p><p style="margin: 0px 40px 16px;" class="font-monospace">
+typedef struct
+<a class="font-monospace link-light" href="cru_merger.html" style="color: #5c76ff;text-decoration: inherit">cru_merger_s</a>
+<br>
+{
+<br>
+&ensp;&ensp;&ensp;struct
+<a class="font-monospace link-light" href="cru_classifier.html" style="color: #5c76ff;text-decoration: inherit">cru_classifier_s</a>
+<strong class="font-monospace" style="color: #45b74a;">me_classifier</strong>;
+<br>
+&ensp;&ensp;&ensp;struct
+<a class="font-monospace link-light" href="cru_order_pair.html" style="color: #5c76ff;text-decoration: inherit">cru_order_pair</a>
+<strong class="font-monospace" style="color: #45b74a;">me_orders</strong>;
+<br>
+&ensp;&ensp;&ensp;struct
+<a class="font-monospace link-light" href="cru_kernel.html" style="color: #5c76ff;text-decoration: inherit">cru_kernel_s</a>
+<strong class="font-monospace" style="color: #45b74a;">me_kernel</strong>;
+<br>
+<a class="font-monospace link-light" href="cru_pruner.html" style="color: #5c76ff;text-decoration: inherit">&ensp;&ensp;&ensp;cru_pruner</a>
+<strong class="font-monospace" style="color: #45b74a;">pruner</strong>;
+<br>
+} *<a class="font-monospace link-light" href="cru_merger.html" style="color: #5c76ff;text-decoration: inherit">cru_merger</a>;
+</p>
+<h6 style="color: #ff5c5c;">DESCRIPTION</h6>
+<p style="margin: 0px 40px 16px;">
+This structure parameterizes the
+<a class="font-monospace link-light" href="cru_merged.html" style="color: #5c76ff;text-decoration: inherit">cru_merged</a>
+library function with necessary information initialized by the
+application to reduce classes of related vertices in a graph
+to single vertices.
+</p>
+<ul style="margin: 0px 40px 16px;"><li>
+The
+<strong class="font-monospace" style="color: #45b74a;">me_classifier</strong>
+field defines an equivalence relation on the vertices in a graph
+by the usual
+<a class="font-monospace link-light" href="cru_classifier.html" style="color: #5c76ff;text-decoration: inherit">cru_classifier</a>
+calling conventions.
+</li><li>
+The vertex operation in the
+<strong class="font-monospace" style="color: #45b74a;">me_kernel.v_op</strong>
+field specifies the method of reducing the set of vertices
+in a class to a single vertex according to the usual
+<a class="font-monospace link-light" href="cru_prop.html" style="color: #5c76ff;text-decoration: inherit">cru_prop</a>
+calling conventions.
+</li><li>
+The edge operation in the
+<strong class="font-monospace" style="color: #45b74a;">me_kernel.e_op</strong>
+field specifies the way a set of edges is reduced to a single
+edge according to the usual
+<a class="font-monospace link-light" href="cru_fold.html" style="color: #5c76ff;text-decoration: inherit">cru_fold</a>
+calling conventions.
+</li><li>
+The
+<strong class="font-monospace" style="color: #45b74a;">pruner</strong>
+field provides for the selective deletion of edges following the usual
+<a class="font-monospace link-light" href="cru_pruner.html" style="color: #5c76ff;text-decoration: inherit">cru_pruner</a>
+calling conventions.
+</li><li>
+Because the resulting graph after being merged may have different
+types of vertices or edges than the given graph, applications
+specify the new vertex and edge orderings to be associated with it
+in the
+<strong class="font-monospace" style="color: #45b74a;">me_orders</strong>
+field.
+</li></ul>
+<p style="margin: 0px 40px 16px;">
+The sets of edges the kernel reduces are determined by the classes of
+mutually related vertices, and the result of reducing of a set of
+edges is allowed to depend on the results of reducing the classes
+containing the edges' origins and termini.
+</p>
+<ul style="margin: 0px 40px 16px;"><li>
+Any two edges are assigned to the same set of edges whenever their
+respective origins and termini are assigned to the same sets of
+vertices according to the
+<a class="font-monospace link-light" href="cru_classifier.html" style="color: #5c76ff;text-decoration: inherit">cru_classifier</a>.
+</li><li>
+For each edge in a set to be reduced, the
+<strong class="font-monospace" style="color: #45b74a;">me_kernel.e_op.map</strong>
+operation is passed the edge's label as the middle operand and the
+vertices obtained by reducing the classes containing the edge's origin
+and terminus as the respective left and right operands.
+</li><li>
+Because the origins of all edges in any set to be reduced belong to
+the same class and the termini belong to the same class, the same left
+operand and the same right operand are passed to the map for each edge
+in the set.
+</li></ul>
+<p style="margin: 0px 40px 16px;">
+Some inferences are made by default when parts of this structure are
+NULL,
+omitted, or zero-filled.
+</p>
+<ul style="margin: 0px 40px 16px;"><li>
+If the
+<strong class="font-monospace" style="color: #45b74a;">me_classifier</strong>
+field is omitted or zero-filled, then one is inferred that puts every
+vertex in a class by itself.
+</li><li>
+If the
+<strong class="font-monospace" style="color: #45b74a;">pruner</strong>
+field is
+NULL,
+then no edges are deleted.
+</li><li>
+If the
+kernel's vertex operation in
+<strong class="font-monospace" style="color: #45b74a;">me_kernel.v_op</strong>
+is omitted or zero-filled, then the
+vertex ordering in the
+<strong class="font-monospace" style="color: #45b74a;">me_orders.v_order</strong>
+field is inferred from that of the given graph.
+</li><li>
+If the kernel's vertex operation specifies a vertex reduction through the
+<strong class="font-monospace" style="color: #45b74a;">me_kernel.v_op.vertex.reduction</strong>
+field but with a
+NULL
+destructor field in
+<strong class="font-monospace" style="color: #45b74a;">me_kernel.v_op.vertex.r_free</strong>,
+then a default scalar vertex ordering is inferred in
+the
+<strong class="font-monospace" style="color: #45b74a;">me_orders.v_order</strong>
+field.
+</li><li>
+If the kernel's edge operation in
+<strong class="font-monospace" style="color: #45b74a;">me_kernel.e_op</strong>
+is omitted or zero-filled, then the
+edge ordering in the
+<strong class="font-monospace" style="color: #45b74a;">me_orders.e_order</strong>
+field is inferred from that of the given graph, and the edges are
+deduplicated rather than being reduced. In this case, there may be
+multiple similarly directed edges between the same two vertices left
+in the resulting graph, but only with mutually distinct labels.
+</li><li>
+If the kernel's edge operation in
+<strong class="font-monospace" style="color: #45b74a;">me_kernel.e_op</strong>
+specifies a reduction through the
+<strong class="font-monospace" style="color: #45b74a;">me_kernel.e_op.reduction</strong>
+field but with a
+NULL
+destructor field in
+<strong class="font-monospace" style="color: #45b74a;">me_kernel.e_op.r_free</strong>,
+then a default scalar edge label ordering is
+inferred in the
+<strong class="font-monospace" style="color: #45b74a;">me_orders.e_order</strong>
+field.
+</li></ul>
+<h6 style="color: #ff5c5c;">ERRORS</h6>
+<p style="margin: 0px 40px 16px;">
+It is an error to omit destructors from the kernel if the results are
+dynamically allocated and destructors can not be inferred from the
+given graph. This error is not detectable but will cause memory
+leaks.
+</p>
+<p style="margin: 0px 40px 16px;">
+The
+<strong class="font-monospace" style="color: #45b74a;">me_classifier</strong>
+field and the
+<strong class="font-monospace" style="color: #45b74a;">me_kernel.v_op</strong>
+field must be both initialized or both zero-filled, because
+either is useless without the other. If only one is initialized,
+then the
+<a class="font-monospace link-light" href="cru_merged.html" style="color: #5c76ff;text-decoration: inherit">cru_merged</a>
+function reports an error of
+<strong class="font-monospace" style="color: #45b74a;">CRU_INCMRG</strong>,
+for a conflicting merge specification.
+</p>
+<h6 style="color: #ff5c5c;">NOTES</h6>
+<p style="margin: 0px 40px 16px;">
+An edge order associated with a given graph is necessary for merging
+it, but need not be defined for the resulting graph in the
+<strong class="font-monospace" style="color: #45b74a;">me_orders</strong>
+field. However, the edge ordering is necessary for further merging of
+the result, as well as for composition, deduplication, postponement,
+and stretching it. If any of these operations is anticipated after
+merging, applications should define an edge ordering.
+</p>
+<h6 style="color: #ff5c5c;">FILES</h6>
+<p style="margin: 0px 40px 16px;">
+<em>/usr/local/include/cru/cru.h</em>
+</p>
+<p style="margin: 0px 40px 16px;">
+<em>/usr/local/include/cru/data_types.h</em>
+</p>
+<p style="margin: 0px 40px 16px;">
+<em>/usr/local/include/cru/error_codes.h</em>
+</p>
+<h6 style="color: #ff5c5c;">SEE ALSO</h6>
+<p style="margin: 0px 40px 16px;">
+<a class="font-monospace link-light" href="cru.html" style="color: #5c76ff;text-decoration: inherit">cru</a>,
+<a class="font-monospace link-light" href="cru_bop.html" style="color: #5c76ff;text-decoration: inherit">cru_bop</a>,
+<a class="font-monospace link-light" href="cru_bpred.html" style="color: #5c76ff;text-decoration: inherit">cru_bpred</a>,
+<a class="font-monospace link-light" href="cru_builder.html" style="color: #5c76ff;text-decoration: inherit">cru_builder</a>,
+<a class="font-monospace link-light" href="cru_built.html" style="color: #5c76ff;text-decoration: inherit">cru_built</a>,
+<a class="font-monospace link-light" href="cru_cbop.html" style="color: #5c76ff;text-decoration: inherit">cru_cbop</a>,
+<a class="font-monospace link-light" href="cru_classifier.html" style="color: #5c76ff;text-decoration: inherit">cru_classifier</a>,
+<a class="font-monospace link-light" href="cru_class_of.html" style="color: #5c76ff;text-decoration: inherit">cru_class_of</a>,
+<a class="font-monospace link-light" href="cru_class_size.html" style="color: #5c76ff;text-decoration: inherit">cru_class_size</a>,
+<a class="font-monospace link-light" href="cru_composed.html" style="color: #5c76ff;text-decoration: inherit">cru_composed</a>,
+<a class="font-monospace link-light" href="cru_composer.html" style="color: #5c76ff;text-decoration: inherit">cru_composer</a>,
+<a class="font-monospace link-light" href="cru_connect.html" style="color: #5c76ff;text-decoration: inherit">cru_connect</a>,
+<a class="font-monospace link-light" href="cru_connector.html" style="color: #5c76ff;text-decoration: inherit">cru_connector</a>,
+<a class="font-monospace link-light" href="cru_cqop.html" style="color: #5c76ff;text-decoration: inherit">cru_cqop</a>,
+<a class="font-monospace link-light" href="cru_crossed.html" style="color: #5c76ff;text-decoration: inherit">cru_crossed</a>,
+<a class="font-monospace link-light" href="cru_crosser.html" style="color: #5c76ff;text-decoration: inherit">cru_crosser</a>,
+<a class="font-monospace link-light" href="cru_ctop.html" style="color: #5c76ff;text-decoration: inherit">cru_ctop</a>,
+<a class="font-monospace link-light" href="cru_ctop_pair.html" style="color: #5c76ff;text-decoration: inherit">cru_ctop_pair</a>,
+<a class="font-monospace link-light" href="cru_ctop_quad.html" style="color: #5c76ff;text-decoration: inherit">cru_ctop_quad</a>,
+<a class="font-monospace link-light" href="cru_data_types.html" style="color: #5c76ff;text-decoration: inherit">cru_data_types</a>,
+<a class="font-monospace link-light" href="cru_deduplicated.html" style="color: #5c76ff;text-decoration: inherit">cru_deduplicated</a>,
+<a class="font-monospace link-light" href="cru_destructor.html" style="color: #5c76ff;text-decoration: inherit">cru_destructor</a>,
+<a class="font-monospace link-light" href="cru_destructor_pair.html" style="color: #5c76ff;text-decoration: inherit">cru_destructor_pair</a>,
+<a class="font-monospace link-light" href="cru_edge_count.html" style="color: #5c76ff;text-decoration: inherit">cru_edge_count</a>,
+<a class="font-monospace link-light" href="cru_fabricated.html" style="color: #5c76ff;text-decoration: inherit">cru_fabricated</a>,
+<a class="font-monospace link-light" href="cru_fabricator.html" style="color: #5c76ff;text-decoration: inherit">cru_fabricator</a>,
+<a class="font-monospace link-light" href="cru_filter.html" style="color: #5c76ff;text-decoration: inherit">cru_filter</a>,
+<a class="font-monospace link-light" href="cru_filtered.html" style="color: #5c76ff;text-decoration: inherit">cru_filtered</a>,
+<a class="font-monospace link-light" href="cru_fold.html" style="color: #5c76ff;text-decoration: inherit">cru_fold</a>,
+<a class="font-monospace link-light" href="cru_free_kill_switch.html" style="color: #5c76ff;text-decoration: inherit">cru_free_kill_switch</a>,
+<a class="font-monospace link-light" href="cru_free_later.html" style="color: #5c76ff;text-decoration: inherit">cru_free_later</a>,
+<a class="font-monospace link-light" href="cru_free_now.html" style="color: #5c76ff;text-decoration: inherit">cru_free_now</a>,
+<a class="font-monospace link-light" href="cru_free_partition.html" style="color: #5c76ff;text-decoration: inherit">cru_free_partition</a>,
+<a class="font-monospace link-light" href="cru_function_types.html" style="color: #5c76ff;text-decoration: inherit">cru_function_types</a>,
+<a class="font-monospace link-light" href="cru_hash.html" style="color: #5c76ff;text-decoration: inherit">cru_hash</a>,
+<a class="font-monospace link-light" href="cru_induced.html" style="color: #5c76ff;text-decoration: inherit">cru_induced</a>,
+<a class="font-monospace link-light" href="cru_inducer.html" style="color: #5c76ff;text-decoration: inherit">cru_inducer</a>,
+<a class="font-monospace link-light" href="cru_kernel.html" style="color: #5c76ff;text-decoration: inherit">cru_kernel</a>,
+<a class="font-monospace link-light" href="cru_kill.html" style="color: #5c76ff;text-decoration: inherit">cru_kill</a>,
+<a class="font-monospace link-light" href="cru_mapreduced.html" style="color: #5c76ff;text-decoration: inherit">cru_mapreduced</a>,
+<a class="font-monospace link-light" href="cru_mapreducer.html" style="color: #5c76ff;text-decoration: inherit">cru_mapreducer</a>,
+<a class="font-monospace link-light" href="cru_merged.html" style="color: #5c76ff;text-decoration: inherit">cru_merged</a>,
+<a class="font-monospace link-light" href="cru_mutated.html" style="color: #5c76ff;text-decoration: inherit">cru_mutated</a>,
+<a class="font-monospace link-light" href="cru_mutator.html" style="color: #5c76ff;text-decoration: inherit">cru_mutator</a>,
+<a class="font-monospace link-light" href="cru_new_kill_switch.html" style="color: #5c76ff;text-decoration: inherit">cru_new_kill_switch</a>,
+<a class="font-monospace link-light" href="cru_nop.html" style="color: #5c76ff;text-decoration: inherit">cru_nop</a>,
+<a class="font-monospace link-light" href="cru_order.html" style="color: #5c76ff;text-decoration: inherit">cru_order</a>,
+<a class="font-monospace link-light" href="cru_order_pair.html" style="color: #5c76ff;text-decoration: inherit">cru_order_pair</a>,
+<a class="font-monospace link-light" href="cru_partition_of.html" style="color: #5c76ff;text-decoration: inherit">cru_partition_of</a>,
+<a class="font-monospace link-light" href="cru_plan.html" style="color: #5c76ff;text-decoration: inherit">cru_plan</a>,
+<a class="font-monospace link-light" href="cru_postponed.html" style="color: #5c76ff;text-decoration: inherit">cru_postponed</a>,
+<a class="font-monospace link-light" href="cru_postponer.html" style="color: #5c76ff;text-decoration: inherit">cru_postponer</a>,
+<a class="font-monospace link-light" href="cru_prop.html" style="color: #5c76ff;text-decoration: inherit">cru_prop</a>,
+<a class="font-monospace link-light" href="cru_prop_pair.html" style="color: #5c76ff;text-decoration: inherit">cru_prop_pair</a>,
+<a class="font-monospace link-light" href="cru_pruner.html" style="color: #5c76ff;text-decoration: inherit">cru_pruner</a>,
+<a class="font-monospace link-light" href="cru_qop.html" style="color: #5c76ff;text-decoration: inherit">cru_qop</a>,
+<a class="font-monospace link-light" href="cru_qpred.html" style="color: #5c76ff;text-decoration: inherit">cru_qpred</a>,
+<a class="font-monospace link-light" href="cru_sig.html" style="color: #5c76ff;text-decoration: inherit">cru_sig</a>,
+<a class="font-monospace link-light" href="cru_split.html" style="color: #5c76ff;text-decoration: inherit">cru_split</a>,
+<a class="font-monospace link-light" href="cru_splitter.html" style="color: #5c76ff;text-decoration: inherit">cru_splitter</a>,
+<a class="font-monospace link-light" href="cru_strerror.html" style="color: #5c76ff;text-decoration: inherit">cru_strerror</a>,
+<a class="font-monospace link-light" href="cru_stretch.html" style="color: #5c76ff;text-decoration: inherit">cru_stretch</a>,
+<a class="font-monospace link-light" href="cru_stretched.html" style="color: #5c76ff;text-decoration: inherit">cru_stretched</a>,
+<a class="font-monospace link-light" href="cru_stretcher.html" style="color: #5c76ff;text-decoration: inherit">cru_stretcher</a>,
+<a class="font-monospace link-light" href="cru_subconnector.html" style="color: #5c76ff;text-decoration: inherit">cru_subconnector</a>,
+<a class="font-monospace link-light" href="cru_top.html" style="color: #5c76ff;text-decoration: inherit">cru_top</a>,
+<a class="font-monospace link-light" href="cru_tpred.html" style="color: #5c76ff;text-decoration: inherit">cru_tpred</a>,
+<a class="font-monospace link-light" href="cru_united.html" style="color: #5c76ff;text-decoration: inherit">cru_united</a>,
+<a class="font-monospace link-light" href="cru_uop.html" style="color: #5c76ff;text-decoration: inherit">cru_uop</a>,
+<a class="font-monospace link-light" href="cru_vertex_count.html" style="color: #5c76ff;text-decoration: inherit">cru_vertex_count</a>,
+<a class="font-monospace link-light" href="cru_zone.html" style="color: #5c76ff;text-decoration: inherit">cru_zone</a>
+</p>
+<h6 style="color: #ff5c5c;">AUTHOR</h6>
+<p style="margin: 0px 40px 16px;">
+Dennis Furey 
+(<a class="font-monospace link-light" href="mailto:milonga@delayinsensitive.com" style="color: #5c76ff;text-decoration: inherit;">milonga@delayinsensitive.com</a>)
+</p>
+<h6 style="color: #ff5c5c;">PROJECT PAGE</h6>
+<p style="margin: 0px 40px 16px;">
+<a class="font-monospace link-light" href="https://github.com/gueststar/cru" style="color: #5c76ff;text-decoration: inherit;">https://github.com/gueststar/cru</a>
+</p>
+<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.1.0</h5></div>
+<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">June 12, 2022</h5></div>
+<div class="col-5 col-sm-5 col-md-4"><h5 class="text-end" style="color: var(--bs-gray);">CRU_MERGER (7)</h5></div></div>
+</body>
