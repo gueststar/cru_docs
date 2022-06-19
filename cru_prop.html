@@ -135,6 +135,15 @@ its output, and the map function's output are of the same type. This
 restriction applies with or without a vacuous case function being
 defined, but if defined, it determines the result for empty graphs.
 </p>
+<h6 style="color: #ff5c5c;">ERRORS</h6>
+<p style="margin: 0px 40px 16px;">
+If the application represents properties as pointers, it must avoid
+having them point to any part of the graph that is dynamically
+allocated. The graph may be subject to reclamation concurrently with
+access to the properties, so failure to abide by this convention can
+cause segmentation faults. An easy workaround is to allocate an
+unshared copy of the relevant data for the property.
+</p>
 <h6 style="color: #ff5c5c;">NOTES</h6>
 <p style="margin: 0px 40px 16px;">
 The
@@ -243,7 +252,7 @@ Dennis Furey
 <p style="margin: 0px 40px 16px;">
 <a class="font-monospace link-light" href="https://github.com/gueststar/cru" style="color: #5c76ff;text-decoration: inherit;">https://github.com/gueststar/cru</a>
 </p>
-<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.1.0</h5></div>
-<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">June 12, 2022</h5></div>
+<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.2.0</h5></div>
+<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">June 19, 2022</h5></div>
 <div class="col-5 col-sm-5 col-md-4"><h5 class="text-end" style="color: var(--bs-gray);">CRU_PROP (7)</h5></div></div>
 </body>

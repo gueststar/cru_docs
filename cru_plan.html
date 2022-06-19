@@ -32,6 +32,9 @@ typedef struct
 &ensp;&ensp;&ensp;int
 <strong class="font-monospace" style="color: #45b74a;">remote_first</strong>;
 <br>
+&ensp;&ensp;&ensp;int
+<strong class="font-monospace" style="color: #45b74a;">ignore_deadlock</strong>;
+<br>
 &ensp;&ensp;&ensp;struct
 <a class="font-monospace link-light" href="cru_zone.html" style="color: #5c76ff;text-decoration: inherit">cru_zone_s</a>
 <strong class="font-monospace" style="color: #45b74a;">zone</strong>;
@@ -99,6 +102,17 @@ if the priority is
 and the zone orientation is backwards, then the prerequisites of each vertex are
 all origins of its incoming edges.
 </li></ul>
+<p style="margin: 0px 40px 16px;">
+Deadlock occurs when an application mistakenly attempts an ordered
+traversal on a cyclic graph. By default,
+<a class="font-monospace link-light" href="cru.html" style="color: #5c76ff;text-decoration: inherit">cru</a>
+attempts to detect deadlock at the cost of a small performance penalty
+and a possibility of false positive detections. Users who are
+confident that a graph being traversed local first or remote first
+contains no cycles should disable deadlock detection by setting the
+<strong class="font-monospace" style="color: #45b74a;">ignore_deadlock</strong>
+field to a non-zero value.
+</p>
 <h6 style="color: #ff5c5c;">ERRORS</h6>
 <p style="margin: 0px 40px 16px;">
 Error codes are reported when this structure is passed to the
@@ -239,7 +253,7 @@ Dennis Furey
 <p style="margin: 0px 40px 16px;">
 <a class="font-monospace link-light" href="https://github.com/gueststar/cru" style="color: #5c76ff;text-decoration: inherit;">https://github.com/gueststar/cru</a>
 </p>
-<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.1.0</h5></div>
-<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">June 12, 2022</h5></div>
+<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.2.0</h5></div>
+<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">June 19, 2022</h5></div>
 <div class="col-5 col-sm-5 col-md-4"><h5 class="text-end" style="color: var(--bs-gray);">CRU_PLAN (7)</h5></div></div>
 </body>
