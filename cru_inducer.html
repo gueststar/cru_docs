@@ -26,6 +26,9 @@ typedef struct
 <br>
 {
 <br>
+<a class="font-monospace link-light" href="cru_uop.html" style="color: #5c76ff;text-decoration: inherit">&ensp;&ensp;&ensp;cru_uop</a>
+<strong class="font-monospace" style="color: #45b74a;">boundary_value</strong>;
+<br>
 &ensp;&ensp;&ensp;struct
 <a class="font-monospace link-light" href="cru_zone.html" style="color: #5c76ff;text-decoration: inherit">cru_zone_s</a>
 <strong class="font-monospace" style="color: #45b74a;">in_zone</strong>;
@@ -72,8 +75,14 @@ field specifies a forward orientation, and the incoming edges otherwise.
 The result overall is that of the initial vertex.
 </li></ul>
 <p style="margin: 0px 40px 16px;">
-To compute the result associated with any vertex being visited, these
-steps are taken.
+The value associated with each vertex having no prerequisites is either
+the value returned by the nullary operator referenced through the
+<strong class="font-monospace" style="color: #45b74a;">in_fold.vacuous_case</strong>
+field, or the unary operator referenced by the
+<strong class="font-monospace" style="color: #45b74a;">boundary_value</strong>
+field applied to the vertex. The latter takes precedence if it is not
+NULL. To compute the result associated with any vertex having
+prerequisites visited, these steps are taken.
 </p>
 <ul style="margin: 0px 40px 16px;"><li>
 For
@@ -103,11 +112,13 @@ convention is independent of the edge's direction.
 </p>
 <p style="margin: 0px 40px 16px;">
 The
-<strong class="font-monospace" style="color: #45b74a;">in_fold.vacuous_case</strong>
-and
 <strong class="font-monospace" style="color: #45b74a;">in_fold.map</strong>
-field must be defined to point to an appropriate operators,
-but if all three of the fields
+and at least one of the
+<strong class="font-monospace" style="color: #45b74a;">in_fold.vacuous_case</strong>
+or
+<strong class="font-monospace" style="color: #45b74a;">boundary_value</strong>
+fields must be defined to point to appropriate operators, but if
+all three of the fields
 <strong class="font-monospace" style="color: #45b74a;">in_fold.m_free</strong>,
 <strong class="font-monospace" style="color: #45b74a;">in_fold.r_free</strong>
 and
@@ -265,7 +276,7 @@ Dennis Furey
 <p style="margin: 0px 40px 16px;">
 <a class="font-monospace link-light" href="https://github.com/gueststar/cru" style="color: #5c76ff;text-decoration: inherit;">https://github.com/gueststar/cru</a>
 </p>
-<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.2.0</h5></div>
-<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">June 19, 2022</h5></div>
+<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.3.0</h5></div>
+<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">June 21, 2022</h5></div>
 <div class="col-5 col-sm-5 col-md-4"><h5 class="text-end" style="color: var(--bs-gray);">CRU_INDUCER (7)</h5></div></div>
 </body>
