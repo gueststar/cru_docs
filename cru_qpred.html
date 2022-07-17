@@ -29,9 +29,12 @@ A user-defined quaternary predicate indicates the sites in a graph
 where a new edge should be created in the course of a
 composition operation performed by the
 <a class="font-monospace link-light" href="cru_composed.html" style="color: #5c76ff;text-decoration: inherit">cru_composed</a>
-API function. The predicate
-is called once for every combination of pairs of end-to-end edges in the
-graph passed to
+API function, or a preference between edges to be filtered from a graph
+by the
+<a class="font-monospace link-light" href="cru_filtered.html" style="color: #5c76ff;text-decoration: inherit">cru_filtered</a>
+API function. In the case of composition, the predicate is called once
+for every combination of pairs of end-to-end edges in the graph passed
+to
 <a class="font-monospace link-light" href="cru_composed.html" style="color: #5c76ff;text-decoration: inherit">cru_composed</a>.
 Its decision can depend in
 general on
@@ -39,35 +42,58 @@ general on
 <ul style="margin: 0px 40px 16px;"><li>
 a user-defined property of the local vertex
 </li><li>
-a user-defined property of an adjacent vertex
-</li><li>
 the label of an edge originating from the local vertex
+</li><li>
+a user-defined property of an adjacent vertex
 </li><li>
 the label of an edge originating from the adjacent vertex.
 </li></ul>
 <p style="margin: 0px 40px 16px;">
-The four operands to the predicte correspond to these
+The four operands to the predicate correspond to these
 entities in this order, and can be scalar values, pointers to heap
 allocated storage, or a combination depending on the application's way
-of representing a graph and its properties. The last parameter is a
-pointer to an error code initially zero on entry. The operator must
-treat the operands as read only but may assign the error code.
+of representing a graph and its properties. In the case of filtering,
+the four operands correspond to
+</p>
+<ul style="margin: 0px 40px 16px;"><li>
+the label of an edge
+</li><li>
+the vertex where the edge having the above label terminates
+</li><li>
+the label of another edge originating from the same vertex as the one above
+</li><li>
+the vertex where the latter edge terminates.
+</li></ul>
+<p style="margin: 0px 40px 16px;">
+The last parameter is a pointer to an error code initially zero on
+entry. The operator must treat the operands as read only but may
+assign the error code.
 </p>
 <h6 style="color: #ff5c5c;">RETURN VALUE</h6>
 <p style="margin: 0px 40px 16px;">
-Any non-zero return value requests the creation of a composing edge
-corresponding to the given combination of edges using an edge label
-constructed by an associated
+In the case of composition, any non-zero return value requests the
+creation of a composing edge corresponding to the given combination of
+edges using an edge label constructed by an associated
 <a class="font-monospace link-light" href="cru_qop.html" style="color: #5c76ff;text-decoration: inherit">cru_qop</a>
-function given the same arguments.
-A return value of zero requests that no edge be created at that site.
+function given the same arguments. A return value of zero requests
+that no edge be created at that site.
+</p>
+<p style="margin: 0px 40px 16px;">
+In the case of filtering, any non-zero return value indicates that the
+left edge would be better to keep in the graph than the right, and a
+zero return value indicates the opposite. The predicate is treated as
+a total order relational operator invoked as needed to discern the
+single minimum edge in a set as the only one to be kept.
 </p>
 <h6 style="color: #ff5c5c;">ERRORS</h6>
 <p style="margin: 0px 40px 16px;">
 If a quaternary predicate sets the error code to any non-zero value, the
 <a class="font-monospace link-light" href="cru_composed.html" style="color: #5c76ff;text-decoration: inherit">cru_composed</a>
-function invoking it reclaims the graph passed to it, returns an empty
-graph, and propagates the same error code to its caller.
+or
+<a class="font-monospace link-light" href="cru_filtered.html" style="color: #5c76ff;text-decoration: inherit">cru_filtered</a>
+function call causing it to be invoked reclaims the graph passed to
+it, returns an empty graph, and propagates the same error code to its
+caller.
 </p>
 <p style="margin: 0px 40px 16px;">
 Applications can report POSIX error codes or define special purpose
@@ -90,9 +116,16 @@ structure, which is built into the
 field in a
 <a class="font-monospace link-light" href="cru_composer.html" style="color: #5c76ff;text-decoration: inherit">cru_composer</a>
 structure passed to
-<a class="font-monospace link-light" href="cru_composed.html" style="color: #5c76ff;text-decoration: inherit">cru_composed</a>.
-The vertex properties contributing to the operator's input
-are computed according to the local and adjacent props defined in the
+<a class="font-monospace link-light" href="cru_composed.html" style="color: #5c76ff;text-decoration: inherit">cru_composed</a>,
+and as the
+<strong class="font-monospace" style="color: #45b74a;">thinner</strong>
+field in a
+<a class="font-monospace link-light" href="cru_filter.html" style="color: #5c76ff;text-decoration: inherit">cru_filter</a>
+structure passed to
+<a class="font-monospace link-light" href="cru_filtered.html" style="color: #5c76ff;text-decoration: inherit">cru_filtered</a>.
+In the case of composition, the vertex properties contributing to the
+operator's input are computed according to the local and adjacent
+props defined in the
 <strong class="font-monospace" style="color: #45b74a;">co_props</strong>
 field of the
 <a class="font-monospace link-light" href="cru_composer.html" style="color: #5c76ff;text-decoration: inherit">cru_composer</a>.
@@ -199,7 +232,7 @@ Dennis Furey
 <p style="margin: 0px 40px 16px;">
 <a class="font-monospace link-light" href="https://github.com/gueststar/cru" style="color: #5c76ff;text-decoration: inherit;">https://github.com/gueststar/cru</a>
 </p>
-<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.5.3</h5></div>
-<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">July 09, 2022</h5></div>
+<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.6.0</h5></div>
+<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">July 17, 2022</h5></div>
 <div class="col-5 col-sm-5 col-md-4"><h5 class="text-end" style="color: var(--bs-gray);">CRU_QPRED (7)</h5></div></div>
 </body>
