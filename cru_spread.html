@@ -9,119 +9,270 @@
 <body style="background-color: var(--bs-dark);color: var(--bs-white);margin: 40px 0px;">
 <div class="container" style="/*background: var(--bs-gradient);*/">
 <div class="row">
-<div class="col-5 col-sm-5 col-md-4" style="height: 32px;"><h5 style="color: var(--bs-gray);">CRU_SUBCONNECTOR (7)</h5></div>
+<div class="col-5 col-sm-5 col-md-4" style="height: 32px;"><h5 style="color: var(--bs-gray);">CRU_SPREAD (3)</h5></div>
 <div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">CRU MANUAL</h5></div>
-<div class="col-5 col-sm-5 col-md-4"><h5 class="text-end" style="color: var(--bs-gray);">CRU_SUBCONNECTOR (7)</h5></div>
+<div class="col-5 col-sm-5 col-md-4"><h5 class="text-end" style="color: var(--bs-gray);">CRU_SPREAD (3)</h5></div>
 </div><div><p></p></div>
 <h6 style="color: #ff5c5c;">NAME</h6>
 <p style="margin: 0px 40px 16px;">
-cru_subconnector - general graph production rule for the cru library
+cru_spread - resume building a partially built graph
 </p>
 <h6 style="color: #ff5c5c;">SYNOPSIS</h6>
 <p style="margin: 0px 40px 16px;" class="font-monospace">
 #include &lt;cru/cru.h&gt;
 </p><p style="margin: 0px 40px 16px;" class="font-monospace">
-typedef void (*<a class="font-monospace link-light" href="cru_subconnector.html" style="color: #5c76ff;text-decoration: inherit">cru_subconnector</a>)
+<strong class="font-monospace" style="color: #45b74a;">cru_graph</strong>
+<a class="font-monospace link-light" href="cru_spread.html" style="color: #5c76ff;text-decoration: inherit">cru_spread</a>
 (
 <br>
-&ensp;&ensp;&ensp;int,
-<br>
-<strong class="font-monospace" style="color: #45b74a;">&ensp;&ensp;&ensp;cru_edge</strong>
+<strong class="font-monospace" style="color: #45b74a;">&ensp;&ensp;&ensp;cru_graph</strong>
+<em>g</em>
 ,
 <br>
-<strong class="font-monospace" style="color: #45b74a;">&ensp;&ensp;&ensp;cru_vertex</strong>
+<a class="font-monospace link-light" href="cru_builder.html" style="color: #5c76ff;text-decoration: inherit">&ensp;&ensp;&ensp;cru_builder</a>
+<em>b</em>
 ,
 <br>
-&ensp;&ensp;&ensp;int *)
+<strong class="font-monospace" style="color: #45b74a;">&ensp;&ensp;&ensp;cru_kill_switch</strong>
+<em>k</em>
+,
+<br>
+&ensp;&ensp;&ensp;unsigned
+<em>lanes</em>
+,
+<br>
+&ensp;&ensp;&ensp;int *<em>err</em>
+)
 </p>
 <h6 style="color: #ff5c5c;">DESCRIPTION</h6>
 <p style="margin: 0px 40px 16px;">
-A user-defined function cast to this type takes four parameters in this order:
+This function enables graphs to be built in multiple passes. When
+<a class="font-monospace link-light" href="cru_spread.html" style="color: #5c76ff;text-decoration: inherit">cru_spread</a>
+is passed an existing graph
+<em>g</em>
+previously built by
+<a class="font-monospace link-light" href="cru_built.html" style="color: #5c76ff;text-decoration: inherit">cru_built</a>,
+these conditions apply.
 </p>
 <ul style="margin: 0px 40px 16px;"><li>
-a condition flag indicating when non-zero
-that the next parameter is undefined and should be ignored
+Any vertex in
+<em>g</em>
+that has any outgoing edges before
+<a class="font-monospace link-light" href="cru_spread.html" style="color: #5c76ff;text-decoration: inherit">cru_spread</a>
+is called acquires no additional outgoing edges.
 </li><li>
-the label on an incident edge to a given vertex in a graph under
-construction unless undefined
-</li><li>
-a vertex in a graph under construction possibly having an incident
-edge labeled by the previous parameter
-</li><li>
-a pointer to an integer error code initially zero on entry.
+Any vertex in
+<em>g</em>
+lacking outgoing edges at the time
+<a class="font-monospace link-light" href="cru_spread.html" style="color: #5c76ff;text-decoration: inherit">cru_spread</a>
+is called, and any new vertex created afterwards, is passed to the
+<strong class="font-monospace" style="color: #45b74a;">connector</strong>
+or
+<strong class="font-monospace" style="color: #45b74a;">subconnector</strong>
+function in
+<em>b</em>
+following the usual
+<a class="font-monospace link-light" href="cru_builder.html" style="color: #5c76ff;text-decoration: inherit">cru_builder</a>
+calling conventions to create new outgoing edges from it and possibly
+new adjacent vertices.
 </li></ul>
 <p style="margin: 0px 40px 16px;">
-The
-<strong class="font-monospace" style="color: #45b74a;">cru_edge</strong>
+The parameter
+<em>b</em>
+is required to point to a
+<a class="font-monospace link-light" href="cru_builder.html" style="color: #5c76ff;text-decoration: inherit">cru_builder</a>
+whose
+<strong class="font-monospace" style="color: #45b74a;">bu_sig</strong>
+field is contains
+<strong class="font-monospace" style="color: #45b74a;">orders</strong>
 and
-<strong class="font-monospace" style="color: #45b74a;">cru_vertex</strong>
-types are aliases to
-<em>void</em>
-pointers, which may refer to any type chosen by the application
-developer. The function must treat the edge label and the vertex as
-read-only.
+<strong class="font-monospace" style="color: #45b74a;">destructors</strong>
+identical to those of the
+<a class="font-monospace link-light" href="cru_sig.html" style="color: #5c76ff;text-decoration: inherit">cru_sig</a>
+in the
+<a class="font-monospace link-light" href="cru_builder.html" style="color: #5c76ff;text-decoration: inherit">cru_builder</a>
+initially used to build
+<em>g</em>
+by
+<a class="font-monospace link-light" href="cru_built.html" style="color: #5c76ff;text-decoration: inherit">cru_built</a>,
+but whose
+<strong class="font-monospace" style="color: #45b74a;">connector</strong>
+or
+<strong class="font-monospace" style="color: #45b74a;">subconnector</strong>
+functions may differ. The
+<strong class="font-monospace" style="color: #45b74a;">bu_sig.vertex_limit</strong>
+field may also differ.
 </p>
 <p style="margin: 0px 40px 16px;">
-Similarly to a
-<a class="font-monospace link-light" href="cru_connector.html" style="color: #5c76ff;text-decoration: inherit">cru_connector</a>
-function, the subconnector builds a graph incrementally by passing a
-newly created edge label and adjacent vertex to
-<a class="font-monospace link-light" href="cru_connect.html" style="color: #5c76ff;text-decoration: inherit">cru_connect</a>
-for each outgoing edge from the given vertex. Redundant identical
-vertices created by subconnector functions are automatically pruned
-and if a destructor is given, also reclaimed.
+The value passed through
+<em>k</em>
+may be either a
+<strong class="font-monospace" style="color: #45b74a;">cru_kill_switch</strong>
+previously obtained by the
+<a class="font-monospace link-light" href="cru_new_kill_switch.html" style="color: #5c76ff;text-decoration: inherit">cru_new_kill_switch</a>
+function or a
+NULL
+pointer denoted alternatively by
+<strong class="font-monospace" style="color: #45b74a;">UNKILLABLE</strong>.
+If code running in another thread passes the
+kill switch to
+<a class="font-monospace link-light" href="cru_kill.html" style="color: #5c76ff;text-decoration: inherit">cru_kill</a>
+while the operation is in progress, then the operation is interrupted.
+In this case,
+<em>g</em>
+is reclaimed and a NULL value is returned.
 </p>
 <p style="margin: 0px 40px 16px;">
-Unlike a connector function, a subconnector is called once for each
-combination of incident edge label and vertex, hence more than once on
-any vertex reached through multiple distinctly labeled edges. The
-subconnector function is allowed to create outgoing edge labels and
-adjacent vertices that depend arbitrarily on the incident edge label
-as well as the vertex.
+The
+<em>lanes</em>
+parameter specifies the number of worker threads to be used for the
+operation. Higher numbers up to the number of CPU cores on the host
+are conducive to higher performance.
 </p>
+<ul style="margin: 0px 40px 16px;"><li>
+A value of 0, denoted alternatively by
+<strong class="font-monospace" style="color: #45b74a;">CONCURRENTLY</strong>,
+requests a number of threads equal to the number of
+cores.
+</li><li>
+A value of 1, denoted alternatively by
+<strong class="font-monospace" style="color: #45b74a;">SEQUENTIALLY</strong>,
+requests single threaded operation.
+</li></ul>
 <p style="margin: 0px 40px 16px;">
-When there are multiple calls involving the same vertex, the resulting
-set of outgoing edges installed from that vertex is the union of all
-outgoing edges created across the calls (that is, with duplicate edges
-pruned).
+For purposes of memory management,
+<em>g</em>
+is consumed by
+<a class="font-monospace link-light" href="cru_spread.html" style="color: #5c76ff;text-decoration: inherit">cru_spread</a>
+and should not be reclaimed by the caller.
+</p>
+<h6 style="color: #ff5c5c;">RETURN VALUE</h6>
+<p style="margin: 0px 40px 16px;">
+On successful completion, the returned value is a pointer to a graph
+derived from
+<em>g</em>
+by being spread according to the given specification, which
+applications should treat as opaque but may pass as a parameter to
+other library functions. In the event of any error, a NULL pointer is
+returned. An unmodified copy of
+<em>g</em>
+is returned if the parameter
+<em>b</em>
+is
+NULL.
 </p>
 <h6 style="color: #ff5c5c;">ERRORS</h6>
 <p style="margin: 0px 40px 16px;">
-If a subconnector function sets the error code to any non-zero value,
-the instance
-<a class="font-monospace link-light" href="cru_built.html" style="color: #5c76ff;text-decoration: inherit">cru_built</a>
-that calls it terminates without building a graph and
-propagates the same error code to its caller.
+The
+<em>err</em>
+parameter is used to report any events preventing successful
+completion of the requested operation to the caller. If
+<em>*err</em>
+is zero on entry and the operation does not succeed, then
+<em>*err</em>
+is assigned a non-zero number. If the operation does not succeed
+because a user-defined callback function reports an error, then the
+number reported by the callback function is assigned to
+<em>*err.</em>
+Positive numbers are for POSIX or user-defined error codes,
+negative numbers down to
+<strong class="font-monospace" style="color: #45b74a;">-CRU_MAX_FAIL</strong>
+are specific to
+<a class="font-monospace link-light" href="cru.html" style="color: #5c76ff;text-decoration: inherit">cru</a>,
+and other negative numbers are allowed as user-defined error codes.
 </p>
 <p style="margin: 0px 40px 16px;">
-Applications can report POSIX error codes or define special purpose
-codes, but should not redefine any that clash with those
-reserved by
-<a class="font-monospace link-light" href="cru.html" style="color: #5c76ff;text-decoration: inherit">cru</a>
-as declared in the
-<em>error_codes.h</em>
-header file.
+Values of
+<em>*err</em>
+listed below refer to errors that are detected and handled. Unlisted values in
+the range of
+<strong class="font-monospace" style="color: #45b74a;">-CRU_INT_ERR</strong>
+through
+<strong class="font-monospace" style="color: #45b74a;">-CRU_MAX_ERR</strong>
+likely indicate internal
+errors attributable to bugs in
+<a class="font-monospace link-light" href="cru.html" style="color: #5c76ff;text-decoration: inherit">cru</a>.
+Any other unlisted values may indicate memory corruption, invalid
+usage of the API, or conditions relevant to user-defined callback
+functions.
+</p>
+<p style="margin: -5px 40px -3px;"><strong class="font-monospace" style="color: #45b74a;">ENOMEM</strong></p><p style="margin: 0px 80px 16px;">
+There is insufficient memory to allocate all necessary resources.
+</p><p style="margin: -5px 40px -3px;"><strong class="font-monospace" style="color: #45b74a;">EAGAIN</strong></p><p style="margin: 0px 80px 16px;">
+Resources or permissions are insufficient to create a thread.
+</p><p style="margin: -5px 40px -3px;"><strong class="font-monospace" style="color: #45b74a;">CRU_BADKIL</strong></p><p style="margin: 0px 80px 16px;">
+The parameter
+<em>k</em>
+refers to an invalid or corrupted kill switch structure.
+</p><p style="margin: -5px 40px -3px;"><strong class="font-monospace" style="color: #45b74a;">CRU_INTKIL</strong></p><p style="margin: 0px 80px 16px;">
+The operation was stopped by user intervention using the kill switch
+<em>k.</em>
+</p><p style="margin: -5px 40px -3px;"><strong class="font-monospace" style="color: #45b74a;">CRU_UNDCON</strong></p><p style="margin: 0px 80px 16px;">
+Both of the fields
+<em>b-&gt;connector</em>
+and
+<em>b-&gt;subconnector</em>
+are
+NULL.
+</p><p style="margin: -5px 40px -3px;"><strong class="font-monospace" style="color: #45b74a;">CRU_INCCON</strong></p><p style="margin: 0px 80px 16px;">
+Both of the fields
+<em>b-&gt;connector</em>
+and
+<em>b-&gt;subconnector</em>
+are initialized as something other than
+NULL. 
+</p><p style="margin: -5px 40px -3px;"><strong class="font-monospace" style="color: #45b74a;">CRU_INTOVF</strong></p><p style="margin: 0px 80px 16px;">
+The number of vertices approached or exceeded the limit set by
+<em>b-&gt;bu_sig.vertex_limit.</em>
+</p><p style="margin: -5px 40px -3px;"><strong class="font-monospace" style="color: #45b74a;">CRU_UNDEQU</strong></p><p style="margin: 0px 80px 16px;">
+A vertex destructor is defined by
+<em>b-&gt;bu_sig.destructors.v_free</em>
+but no vertex equality relation is defined in
+<em>b-&gt;bu_sig.orders.v_order.equal,</em>
+or an edge destructor is defined by
+<em>b-&gt;bu_sig.destructors.e_free</em>
+but no edge equality relation is defined in
+<em>b-&gt;bu_sig.orders.e_order.equal.</em>
+</p><p style="margin: -5px 40px -3px;"><strong class="font-monospace" style="color: #45b74a;">CRU_UNDHSH</strong></p><p style="margin: 0px 80px 16px;">
+A vertex destructor is defined by
+<em>b-&gt;bu_sig.destructors.v_free</em>
+but no vertex hash function is defined in
+<em>b-&gt;bu_sig.orders.v_order.hash</em>
+or an edge destructor is defined by
+<em>b-&gt;bu_sig.destructors.e_free</em>
+but no vertex hash function is defined in
+<em>b-&gt;bu_sig.orders.e_order.hash.</em>
+</p><p style="margin: -5px 40px -3px;"><strong class="font-monospace" style="color: #45b74a;">CRU_INCSPB</strong></p><p style="margin: 0px 80px 16px;">
+The given orders
+<em>b-&gt;bu_sig.orders</em>
+or the destructors
+<em>b-&gt;bu_sig.destructors</em>
+differ from those used in the
+<a class="font-monospace link-light" href="cru_builder.html" style="color: #5c76ff;text-decoration: inherit">cru_builder</a>
+previously passed to
+<a class="font-monospace link-light" href="cru_built.html" style="color: #5c76ff;text-decoration: inherit">cru_built</a>
+to build the graph
+<em>g.</em>
 </p>
 <h6 style="color: #ff5c5c;">NOTES</h6>
 <p style="margin: 0px 40px 16px;">
-Subonnector functions are
-referenced by the
-<strong class="font-monospace" style="color: #45b74a;">subconnector</strong>
-field in a
-<a class="font-monospace link-light" href="cru_builder.html" style="color: #5c76ff;text-decoration: inherit">cru_builder</a>
-structure passed to the
-<a class="font-monospace link-light" href="cru_built.html" style="color: #5c76ff;text-decoration: inherit">cru_built</a>
-API function. This field has no default value.
+This function may be useful for saving memory in applications that
+build a graph and then prune it. When building the whole graph before
+pruning it is prohibitive, building the graph in phases and pruning it
+during each phase may be feasible.
 </p>
 <h6 style="color: #ff5c5c;">FILES</h6>
 <p style="margin: 0px 40px 16px;">
-<em>/usr/local/include/cru/function_types.h</em>
+<em>/usr/local/include/cru/cru.h</em>
 </p>
 <p style="margin: 0px 40px 16px;">
 <em>/usr/local/include/cru/data_types.h</em>
 </p>
 <p style="margin: 0px 40px 16px;">
 <em>/usr/local/include/cru/error_codes.h</em>
+</p>
+<p style="margin: 0px 40px 16px;">
+<em>/usr/local/include/cru/function_types.h</em>
 </p>
 <h6 style="color: #ff5c5c;">SEE ALSO</h6>
 <p style="margin: 0px 40px 16px;">
@@ -186,11 +337,11 @@ API function. This field has no default value.
 <a class="font-monospace link-light" href="cru_sig.html" style="color: #5c76ff;text-decoration: inherit">cru_sig</a>,
 <a class="font-monospace link-light" href="cru_split.html" style="color: #5c76ff;text-decoration: inherit">cru_split</a>,
 <a class="font-monospace link-light" href="cru_splitter.html" style="color: #5c76ff;text-decoration: inherit">cru_splitter</a>,
-<a class="font-monospace link-light" href="cru_spread.html" style="color: #5c76ff;text-decoration: inherit">cru_spread</a>,
 <a class="font-monospace link-light" href="cru_strerror.html" style="color: #5c76ff;text-decoration: inherit">cru_strerror</a>,
 <a class="font-monospace link-light" href="cru_stretch.html" style="color: #5c76ff;text-decoration: inherit">cru_stretch</a>,
 <a class="font-monospace link-light" href="cru_stretched.html" style="color: #5c76ff;text-decoration: inherit">cru_stretched</a>,
 <a class="font-monospace link-light" href="cru_stretcher.html" style="color: #5c76ff;text-decoration: inherit">cru_stretcher</a>,
+<a class="font-monospace link-light" href="cru_subconnector.html" style="color: #5c76ff;text-decoration: inherit">cru_subconnector</a>,
 <a class="font-monospace link-light" href="cru_top.html" style="color: #5c76ff;text-decoration: inherit">cru_top</a>,
 <a class="font-monospace link-light" href="cru_tpred.html" style="color: #5c76ff;text-decoration: inherit">cru_tpred</a>,
 <a class="font-monospace link-light" href="cru_united.html" style="color: #5c76ff;text-decoration: inherit">cru_united</a>,
@@ -209,5 +360,5 @@ Dennis Furey
 </p>
 <div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.7.0</h5></div>
 <div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">September 03, 2022</h5></div>
-<div class="col-5 col-sm-5 col-md-4"><h5 class="text-end" style="color: var(--bs-gray);">CRU_SUBCONNECTOR (7)</h5></div></div>
+<div class="col-5 col-sm-5 col-md-4"><h5 class="text-end" style="color: var(--bs-gray);">CRU_SPREAD (3)</h5></div></div>
 </body>

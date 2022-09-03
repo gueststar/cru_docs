@@ -76,25 +76,15 @@ and a
 <strong class="font-monospace" style="color: #45b74a;">subconnector</strong>
 are defined.
 </p><p style="margin: -5px 40px -3px;"><strong class="font-monospace" style="color: #45b74a;">CRU_UNDHSH</strong></p><p style="margin: 0px 80px 16px;">
-No vertex hash function is defined or inferrable.
+No hash function is defined or inferrable for vertices, edges, or both.
 </p><p style="margin: -5px 40px -3px;"><strong class="font-monospace" style="color: #45b74a;">CRU_UNDEQU</strong></p><p style="margin: 0px 80px 16px;">
-No vertex equality relational predicate is defined or inferrable.
+No equality relational predicate is defined or inferrable for vertices, edges, or both.
 </p><p style="margin: -5px 40px -3px;"><strong class="font-monospace" style="color: #45b74a;">CRU_INCVEL</strong></p><p style="margin: 0px 80px 16px;">
 The vertex equality relational predicate is not
 reflexive.
 </p>
 <p style="margin: 0px 40px 16px;">
 Non-reflexive equality is not always detected but is always an error.
-</p>
-<h6 style="color: #ff5c5c;">NOTES</h6>
-<p style="margin: 0px 40px 16px;">
-An edge order is not necessary for building a graph, but is necessary
-for the operations of composition, merging, deduplication,
-postponement, and stretching existing graphs. For these operations, an
-edge ordering must be defined or inferrable at some point in advance,
-so it should be defined as part of the
-<strong class="font-monospace" style="color: #45b74a;">bu_sig</strong>
-field if any of these operations is anticipated.
 </p>
 <h6 style="color: #ff5c5c;">FILES</h6>
 <p style="margin: 0px 40px 16px;">
@@ -168,6 +158,7 @@ field if any of these operations is anticipated.
 <a class="font-monospace link-light" href="cru_sig.html" style="color: #5c76ff;text-decoration: inherit">cru_sig</a>,
 <a class="font-monospace link-light" href="cru_split.html" style="color: #5c76ff;text-decoration: inherit">cru_split</a>,
 <a class="font-monospace link-light" href="cru_splitter.html" style="color: #5c76ff;text-decoration: inherit">cru_splitter</a>,
+<a class="font-monospace link-light" href="cru_spread.html" style="color: #5c76ff;text-decoration: inherit">cru_spread</a>,
 <a class="font-monospace link-light" href="cru_strerror.html" style="color: #5c76ff;text-decoration: inherit">cru_strerror</a>,
 <a class="font-monospace link-light" href="cru_stretch.html" style="color: #5c76ff;text-decoration: inherit">cru_stretch</a>,
 <a class="font-monospace link-light" href="cru_stretched.html" style="color: #5c76ff;text-decoration: inherit">cru_stretched</a>,
@@ -189,7 +180,7 @@ Dennis Furey
 <p style="margin: 0px 40px 16px;">
 <a class="font-monospace link-light" href="https://github.com/gueststar/cru" style="color: #5c76ff;text-decoration: inherit;">https://github.com/gueststar/cru</a>
 </p>
-<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.6.0</h5></div>
-<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">July 17, 2022</h5></div>
+<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.7.0</h5></div>
+<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">September 03, 2022</h5></div>
 <div class="col-5 col-sm-5 col-md-4"><h5 class="text-end" style="color: var(--bs-gray);">CRU_BUILDER (7)</h5></div></div>
 </body>

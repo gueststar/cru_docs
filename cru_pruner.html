@@ -97,26 +97,6 @@ library function. This field may be omitted or assigned
 NULL
 if the pruning step is not required.
 </p>
-<p style="margin: 0px 40px 16px;">
-Because this operation depends on comparison of edge labels in a
-graph, a hash function and an equality relation on edge labels need to
-have been previously defined or inferred when the graph was built,
-even if such a graph normally could be built without them. These
-functions are specified by the
-<strong class="font-monospace" style="color: #45b74a;">hash</strong>
-and
-<strong class="font-monospace" style="color: #45b74a;">equal</strong>
-fields within the
-<strong class="font-monospace" style="color: #45b74a;">bu_sig.orders.e_order</strong>
-field of the
-<a class="font-monospace link-light" href="cru_builder.html" style="color: #5c76ff;text-decoration: inherit">cru_builder</a>
-used to build the graph. However, if no destructor for edges is
-defined in the
-<strong class="font-monospace" style="color: #45b74a;">bu_sig.destructors.e_free</strong>
-field, then
-<a class="font-monospace link-light" href="cru.html" style="color: #5c76ff;text-decoration: inherit">cru</a>
-infers default hashes and relations.
-</p>
 <h6 style="color: #ff5c5c;">FILES</h6>
 <p style="margin: 0px 40px 16px;">
 <em>/usr/local/include/cru/function_types.h</em>
@@ -189,6 +169,7 @@ infers default hashes and relations.
 <a class="font-monospace link-light" href="cru_sig.html" style="color: #5c76ff;text-decoration: inherit">cru_sig</a>,
 <a class="font-monospace link-light" href="cru_split.html" style="color: #5c76ff;text-decoration: inherit">cru_split</a>,
 <a class="font-monospace link-light" href="cru_splitter.html" style="color: #5c76ff;text-decoration: inherit">cru_splitter</a>,
+<a class="font-monospace link-light" href="cru_spread.html" style="color: #5c76ff;text-decoration: inherit">cru_spread</a>,
 <a class="font-monospace link-light" href="cru_strerror.html" style="color: #5c76ff;text-decoration: inherit">cru_strerror</a>,
 <a class="font-monospace link-light" href="cru_stretch.html" style="color: #5c76ff;text-decoration: inherit">cru_stretch</a>,
 <a class="font-monospace link-light" href="cru_stretched.html" style="color: #5c76ff;text-decoration: inherit">cru_stretched</a>,
@@ -210,7 +191,7 @@ Dennis Furey
 <p style="margin: 0px 40px 16px;">
 <a class="font-monospace link-light" href="https://github.com/gueststar/cru" style="color: #5c76ff;text-decoration: inherit;">https://github.com/gueststar/cru</a>
 </p>
-<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.6.0</h5></div>
-<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">July 17, 2022</h5></div>
+<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.7.0</h5></div>
+<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">September 03, 2022</h5></div>
 <div class="col-5 col-sm-5 col-md-4"><h5 class="text-end" style="color: var(--bs-gray);">CRU_PRUNER (7)</h5></div></div>
 </body>
