@@ -172,12 +172,12 @@ omitted, or zero-filled.
 If the
 kernel's vertex operation in
 <strong class="font-monospace" style="color: #45b74a;">mu_kernel.v_op</strong>
-is omitted or zero-filled and the
+is omitted or zero-filled or the
+<strong class="font-monospace" style="color: #45b74a;">mu_kernel.v_op.vertex.m_free</strong>
+field is identical to the vertex destructor of the given graph,
+then the vertex ordering
 <strong class="font-monospace" style="color: #45b74a;">mu_orders.v_order</strong>
-field is unspecified or partially specified, then the vertex ordering
-in the
-<strong class="font-monospace" style="color: #45b74a;">mu_orders.v_order</strong>
-field is inferred as needed from that of the given graph.
+is inferred as needed from that of the given graph.
 </li><li>
 If the kernel's vertex operation specifies a vertex map through the
 <strong class="font-monospace" style="color: #45b74a;">mu_kernel.v_op.vertex.map</strong>
@@ -192,10 +192,12 @@ field.
 </li><li>
 If the kernel's edge operation in
 <strong class="font-monospace" style="color: #45b74a;">mu_kernel.e_op</strong>
-is omitted, zero-filled, or partially specified, then the edge ordering
-in the
+is omitted, zero-filled, or partially specified, or if the
+<strong class="font-monospace" style="color: #45b74a;">mu_kernel.e_op.m_free</strong>
+field is identical to the given graph's edge destructor,
+then the edge ordering
 <strong class="font-monospace" style="color: #45b74a;">mu_orders.e_order</strong>
-field is inferred as needed from that of the given graph.
+is inferred as needed from that of the given graph.
 </li><li>
 If the kernel's edge operation in
 <strong class="font-monospace" style="color: #45b74a;">mu_kernel.e_op</strong>
@@ -360,7 +362,7 @@ Dennis Furey
 <p style="margin: 0px 40px 16px;">
 <a class="font-monospace link-light" href="https://github.com/gueststar/cru" style="color: #5c76ff;text-decoration: inherit;">https://github.com/gueststar/cru</a>
 </p>
-<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.7.2</h5></div>
-<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">September 13, 2022</h5></div>
+<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.7.3</h5></div>
+<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">September 30, 2022</h5></div>
 <div class="col-5 col-sm-5 col-md-4"><h5 class="text-end" style="color: var(--bs-gray);">CRU_MUTATOR (7)</h5></div></div>
 </body>
