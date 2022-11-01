@@ -111,19 +111,35 @@ each of its prerequisites' results on the right, and that this calling
 convention is independent of the edge's direction.
 </p>
 <p style="margin: 0px 40px 16px;">
-The
+Ordinarily, the
 <strong class="font-monospace" style="color: #45b74a;">in_fold.map</strong>
 and at least one of the
 <strong class="font-monospace" style="color: #45b74a;">in_fold.vacuous_case</strong>
 or
 <strong class="font-monospace" style="color: #45b74a;">boundary_value</strong>
-fields must be defined to point to appropriate operators, but if
+fields must be defined to point to appropriate operators. The
+<strong class="font-monospace" style="color: #45b74a;">in_fold.map</strong>
+field may be left unspecified when the
+<strong class="font-monospace" style="color: #45b74a;">boundary_value</strong>
+field is defined and the
+<strong class="font-monospace" style="color: #45b74a;">in_zone</strong>
+field specifies an initial vertex and traversal direction such
+that the initial vertex has no prerequisites. The map is not
+needed in this case because only the initial vertex is visited
+and the result is given by the boundary value. Where the map is not
+needed, neither is the 
+<strong class="font-monospace" style="color: #45b74a;">in_fold.reduction</strong>
+required.
+</p>
+<p style="margin: 0px 40px 16px;">
+If
 all three of the fields
 <strong class="font-monospace" style="color: #45b74a;">in_fold.m_free</strong>,
 <strong class="font-monospace" style="color: #45b74a;">in_fold.r_free</strong>
 and
 <strong class="font-monospace" style="color: #45b74a;">in_fold.reduction</strong>
-are NULL, then a binary operator is inferred for the reduction
+are NULL, then a binary operator is inferred for the 
+<strong class="font-monospace" style="color: #45b74a;">in_fold.reduction</strong>
 that returns the lesser of its two operands interpreted as
 unsigned integers.
 <strong class="font-monospace" style="color: #45b74a;"></strong>
@@ -167,7 +183,7 @@ functions.
 The
 <strong class="font-monospace" style="color: #45b74a;">in_fold.map</strong>
 field is
-NULL.
+NULL but needed to be specified.
 </p><p style="margin: -5px 40px -3px;"><strong class="font-monospace" style="color: #45b74a;">CRU_UNDRED</strong></p><p style="margin: 0px 80px 16px;">
 The
 <strong class="font-monospace" style="color: #45b74a;">in_fold.reduction</strong>
@@ -178,6 +194,43 @@ The
 <strong class="font-monospace" style="color: #45b74a;">in_fold.vacuous_case</strong>
 field is
 NULL.
+</p>
+<h6 style="color: #ff5c5c;">EXAMPLE</h6>
+<p style="margin: 0px 40px 16px;">
+An example of a situation in which the
+<strong class="font-monospace" style="color: #45b74a;">in_fold.map</strong>
+field need not be specified is an inducton over a graph
+<em>g</em>
+built with no edges terminating on the initial vertex. Specifying the structure
+</p>
+<div style="margin: 0px 80px 12px;padding:20px 20px 8px;color:rgb(31,255,63);background-color:rgb(0,0,0)"><pre>
+struct cru_inducer_s i = {
+   .boundary_value = (cru_uop) my_root_evaluator,
+   .in_zone = {
+      .backwards = 1}};</pre></div>
+<p style="margin: 0px 40px 16px;">
+causes
+<em>my_root_evaluator</em>
+to be passed the initial vertex of
+<em>g</em>
+in the invocation
+</p>
+<div style="margin: 0px 80px 12px;padding:20px 20px 8px;color:rgb(31,255,63);background-color:rgb(0,0,0)"><pre>
+result = cru_induced (g, &i, UNKILLABLE, SEQUENTIALLY, err);</pre></div>
+<p style="margin: 0px 40px 16px;">
+and its return value to be assigned to the
+<em>result.</em>
+No other vertices are visited, so in this example no performance
+penalty accrues to sequential operation. If an inital vertex
+were specified explicitly in the
+<strong class="font-monospace" style="color: #45b74a;">in_zone</strong>
+field differing from the initial vertex used to build the graph, then
+<em>g</em>
+would have be searched for it and performance might be affected.
+For this operation to be useful, typically the graph
+<em>g</em>
+will have been mutated since being built with the effect of storing or
+encoding some worthwhile result in the initial vertex.
 </p>
 <h6 style="color: #ff5c5c;">FILES</h6>
 <p style="margin: 0px 40px 16px;">
@@ -270,7 +323,7 @@ Dennis Furey
 <p style="margin: 0px 40px 16px;">
 <a class="font-monospace link-light" href="https://github.com/gueststar/cru" style="color: #5c76ff;text-decoration: inherit;">https://github.com/gueststar/cru</a>
 </p>
-<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.8.5</h5></div>
-<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">October 29, 2022</h5></div>
+<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.9.0</h5></div>
+<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">November 01, 2022</h5></div>
 <div class="col-5 col-sm-5 col-md-4"><h5 class="text-end" style="color: var(--bs-gray);">CRU_INDUCER (7)</h5></div></div>
 </body>
