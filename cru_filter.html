@@ -269,6 +269,40 @@ condition is not enforceable by
 <a class="font-monospace link-light" href="cru.html" style="color: #5c76ff;text-decoration: inherit">cru</a>
 but failure to meet it may lead to non-deterministic results.
 </p>
+<h6 style="color: #ff5c5c;">EXAMPLES</h6>
+<p style="margin: 0px 40px 16px;">
+This function
+</p>
+<div style="margin: 0px 80px 12px;padding:20px 20px 8px;color:rgb(31,255,63);background-color:rgb(0,0,0)"><pre>
+uintptr_t
+even (void *l, uintptr_t vertex, void *r, int *err)
+{
+   return ! (vertex & 1);
+}</pre></div>
+<p style="margin: 0px 40px 16px;">
+in this
+<a class="font-monospace link-light" href="cru_filter.html" style="color: #5c76ff;text-decoration: inherit">cru_filter</a>
+</p>
+<div style="margin: 0px 80px 12px;padding:20px 20px 8px;color:rgb(31,255,63);background-color:rgb(0,0,0)"><pre>
+struct cru_filter_s f = {
+   .fi_kernel = {
+      .v_op = {
+         .vertex = {
+            .map = (cru_top) even}}}};</pre></div>
+<p style="margin: 0px 40px 16px;">
+calls for the retention of even numbered vertices in a graph of
+numerical vertices and the removal of all others, whereas this
+<a class="font-monospace link-light" href="cru_filter.html" style="color: #5c76ff;text-decoration: inherit">cru_filter</a>
+</p>
+<div style="margin: 0px 80px 12px;padding:20px 20px 8px;color:rgb(31,255,63);background-color:rgb(0,0,0)"><pre>
+struct cru_filter_s f = {
+   .fi_kernel = {
+      .e_op = {
+         .map = (cru_top) even}}};</pre></div>
+<p style="margin: 0px 40px 16px;">
+specifies the remove of odd-numbered edges in a graph whose
+edges are numerically labeled.
+</p>
 <h6 style="color: #ff5c5c;">NOTES</h6>
 <p style="margin: 0px 40px 16px;">
 It is not impossible for vertices outside of a zone of the graph
@@ -339,11 +373,13 @@ edge from each vertex to be deleted.
 <a class="font-monospace link-light" href="cru_free_now.html" style="color: #5c76ff;text-decoration: inherit">cru_free_now</a>,
 <a class="font-monospace link-light" href="cru_free_partition.html" style="color: #5c76ff;text-decoration: inherit">cru_free_partition</a>,
 <a class="font-monospace link-light" href="cru_function_types.html" style="color: #5c76ff;text-decoration: inherit">cru_function_types</a>,
+<a class="font-monospace link-light" href="cru_get.html" style="color: #5c76ff;text-decoration: inherit">cru_get</a>,
 <a class="font-monospace link-light" href="cru_hash.html" style="color: #5c76ff;text-decoration: inherit">cru_hash</a>,
 <a class="font-monospace link-light" href="cru_induced.html" style="color: #5c76ff;text-decoration: inherit">cru_induced</a>,
 <a class="font-monospace link-light" href="cru_inducer.html" style="color: #5c76ff;text-decoration: inherit">cru_inducer</a>,
 <a class="font-monospace link-light" href="cru_kernel.html" style="color: #5c76ff;text-decoration: inherit">cru_kernel</a>,
 <a class="font-monospace link-light" href="cru_kill.html" style="color: #5c76ff;text-decoration: inherit">cru_kill</a>,
+<a class="font-monospace link-light" href="cru_killed.html" style="color: #5c76ff;text-decoration: inherit">cru_killed</a>,
 <a class="font-monospace link-light" href="cru_mapreduced.html" style="color: #5c76ff;text-decoration: inherit">cru_mapreduced</a>,
 <a class="font-monospace link-light" href="cru_mapreducer.html" style="color: #5c76ff;text-decoration: inherit">cru_mapreducer</a>,
 <a class="font-monospace link-light" href="cru_merged.html" style="color: #5c76ff;text-decoration: inherit">cru_merged</a>,
@@ -363,6 +399,7 @@ edge from each vertex to be deleted.
 <a class="font-monospace link-light" href="cru_pruner.html" style="color: #5c76ff;text-decoration: inherit">cru_pruner</a>,
 <a class="font-monospace link-light" href="cru_qop.html" style="color: #5c76ff;text-decoration: inherit">cru_qop</a>,
 <a class="font-monospace link-light" href="cru_qpred.html" style="color: #5c76ff;text-decoration: inherit">cru_qpred</a>,
+<a class="font-monospace link-light" href="cru_set.html" style="color: #5c76ff;text-decoration: inherit">cru_set</a>,
 <a class="font-monospace link-light" href="cru_sig.html" style="color: #5c76ff;text-decoration: inherit">cru_sig</a>,
 <a class="font-monospace link-light" href="cru_singleton.html" style="color: #5c76ff;text-decoration: inherit">cru_singleton</a>,
 <a class="font-monospace link-light" href="cru_split.html" style="color: #5c76ff;text-decoration: inherit">cru_split</a>,
@@ -390,7 +427,7 @@ Dennis Furey
 <p style="margin: 0px 40px 16px;">
 <a class="font-monospace link-light" href="https://github.com/gueststar/cru" style="color: #5c76ff;text-decoration: inherit;">https://github.com/gueststar/cru</a>
 </p>
-<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.10.7</h5></div>
-<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">January 14, 2023</h5></div>
+<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.10.8</h5></div>
+<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">January 21, 2023</h5></div>
 <div class="col-5 col-sm-5 col-md-4"><h5 class="text-end" style="color: var(--bs-gray);">CRU_FILTER (7)</h5></div></div>
 </body>

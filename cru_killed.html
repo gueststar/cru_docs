@@ -10,109 +10,77 @@
 <body style="background-color: var(--bs-dark);color: var(--bs-white);margin: 40px 0px;">
 <div class="container" style="/*background: var(--bs-gradient);*/">
 <div class="row">
-<div class="col-5 col-sm-5 col-md-4" style="height: 32px;"><h5 style="color: var(--bs-gray);">CRU_TOP (7)</h5></div>
+<div class="col-5 col-sm-5 col-md-4" style="height: 32px;"><h5 style="color: var(--bs-gray);">CRU_KILLED (3)</h5></div>
 <div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">CRU MANUAL</h5></div>
-<div class="col-5 col-sm-5 col-md-4"><h5 class="text-end" style="color: var(--bs-gray);">CRU_TOP (7)</h5></div>
+<div class="col-5 col-sm-5 col-md-4"><h5 class="text-end" style="color: var(--bs-gray);">CRU_KILLED (3)</h5></div>
 </div><div><p></p></div>
 <h6 style="color: #ff5c5c;">NAME</h6>
 <p style="margin: 0px 40px 16px;">
-cru_top - ternary operator function type used in the cru library
+cru_killed - poll the killed state of a graph transformation job
 </p>
 <h6 style="color: #ff5c5c;">SYNOPSIS</h6>
 <p style="margin: 0px 40px 16px;" class="font-monospace">
 #include &lt;cru/cru.h&gt;
 </p><p style="margin: 0px 40px 16px;" class="font-monospace">
-typedef void* (*<a class="font-monospace link-light" href="cru_top.html" style="color: #5c76ff;text-decoration: inherit">cru_top</a>)(void *, void *, void *, int *)
+int
+<a class="font-monospace link-light" href="cru_killed.html" style="color: #5c76ff;text-decoration: inherit">cru_killed</a>
+(void)
 </p>
 <h6 style="color: #ff5c5c;">DESCRIPTION</h6>
 <p style="margin: 0px 40px 16px;">
-A user-defined ternary operator takes three operands and a pointer
-to an initially zero error code as arguments. The operands can be
-scalar values, pointers to heap allocated storage, or a combination.
-The operator must treat the operands as read only but may assign the
-error code.
-</p>
-<p style="margin: 0px 40px 16px;">
-Applications use ternary operators to tell
+When called from within any user-written callback function such as an
+operator or predicate invoked by a
 <a class="font-monospace link-light" href="cru.html" style="color: #5c76ff;text-decoration: inherit">cru</a>
-API functions how to compute some value determined by a vertex or
-an edge and its immediate environment.
+library function, this function tests whether the job that
+called the callback function has been killed by
+<a class="font-monospace link-light" href="cru_kill.html" style="color: #5c76ff;text-decoration: inherit">cru_kill</a>
+since the callback function was called. The relevant job is
+determined automatically provided that
+<a class="font-monospace link-light" href="cru_killed.html" style="color: #5c76ff;text-decoration: inherit">cru_killed</a>
+runs in the same thread as the callback function.
 </p>
-<ul style="margin: 0px 40px 16px;"><li>
-In some contexts, the middle operand is an edge label and the first
-and last operands are the vertices or user-defined properties of the
-vertices at either end of the edge.
-</li><li>
-In other contexts, the middle operand is a vertex and the first and
-last operands are user-defined values computed by reductions over the
-set of its incoming edges and the set of its outgoing edges
-respectively.
-</li></ul>
 <h6 style="color: #ff5c5c;">RETURN VALUE</h6>
 <p style="margin: 0px 40px 16px;">
-The return value may be either a scalar value or a pointer to the heap
-at the option of the application developer. In the case of a pointer,
-the result ordinarily refers to newly allocated storage. However,
-applications may opt to return a pointer to shared storage provided
-the operator and the corresponding
-<a class="font-monospace link-light" href="cru_destructor.html" style="color: #5c76ff;text-decoration: inherit">cru_destructor</a>
-function implement thread-safe reference
-counting.
+If the job is found to be killed, this function returns a non-zero
+value. If the job has not been killed or if this function is called
+outside the thread context of a callback function, it returns zero.
 </p>
 <h6 style="color: #ff5c5c;">ERRORS</h6>
 <p style="margin: 0px 40px 16px;">
-If a ternary operator sets the error code to any non-zero value, the
-<a class="font-monospace link-light" href="cru.html" style="color: #5c76ff;text-decoration: inherit">cru</a>
-API function invoking it terminates early without completing, and
-propagates the same error code to its caller.
-</p>
-<p style="margin: 0px 40px 16px;">
-Applications can report POSIX error codes or define special purpose
-codes, but should not redefine any that clash with those
-reserved by
-<a class="font-monospace link-light" href="cru.html" style="color: #5c76ff;text-decoration: inherit">cru</a>
-as declared in the
-<em>error_codes.h</em>
-header file.
+none
 </p>
 <h6 style="color: #ff5c5c;">NOTES</h6>
 <p style="margin: 0px 40px 16px;">
-Ternary operators are passed to
-<a class="font-monospace link-light" href="cru.html" style="color: #5c76ff;text-decoration: inherit">cru</a>
-API functions not directly but by pointers to them in the fields of
-base structures built into derived structures then built into the top
-level structures that are passed via the API. One such field
-is the
-<strong class="font-monospace" style="color: #45b74a;">map</strong>
-in a
-<a class="font-monospace link-light" href="cru_fold.html" style="color: #5c76ff;text-decoration: inherit">cru_fold</a>
-structure and the other is
-<strong class="font-monospace" style="color: #45b74a;">top</strong>
-field of a
-<a class="font-monospace link-light" href="cru_ctop.html" style="color: #5c76ff;text-decoration: inherit">cru_ctop</a>
-(conditional ternary operator)
-structure.
-Regarding the operand interpretations mentioned above,
-the middle operand is a vertex only when the operator
-is the
-<strong class="font-monospace" style="color: #45b74a;">map</strong>
-field of a
-<a class="font-monospace link-light" href="cru_fold.html" style="color: #5c76ff;text-decoration: inherit">cru_fold</a>
-used as the
-<strong class="font-monospace" style="color: #45b74a;">vertex</strong>
-field of a
-<a class="font-monospace link-light" href="cru_prop.html" style="color: #5c76ff;text-decoration: inherit">cru_prop</a>.
-In any other context, it is an edge label.
+Ordinarily this function is not needed because no special action is
+required in user code to make a killed job terminate early. Using this
+function is appropriate only when immediate responses to killing
+events are important and callback functions are long-running. Because
+<a class="font-monospace link-light" href="cru_kill.html" style="color: #5c76ff;text-decoration: inherit">cru_kill</a>
+does not pre-empt user-written code, the callback function should be
+designed to poll
+<a class="font-monospace link-light" href="cru_killed.html" style="color: #5c76ff;text-decoration: inherit">cru_killed</a>
+and behave accordingly.
+</p>
+<p style="margin: 0px 40px 16px;">
+Killable operations compatible with this function include
+<a class="font-monospace link-light" href="cru_built.html" style="color: #5c76ff;text-decoration: inherit">cru_built</a>,
+<a class="font-monospace link-light" href="cru_composed.html" style="color: #5c76ff;text-decoration: inherit">cru_composed</a>,
+<a class="font-monospace link-light" href="cru_crossed.html" style="color: #5c76ff;text-decoration: inherit">cru_crossed</a>,
+<a class="font-monospace link-light" href="cru_fabricated.html" style="color: #5c76ff;text-decoration: inherit">cru_fabricated</a>,
+<a class="font-monospace link-light" href="cru_filtered.html" style="color: #5c76ff;text-decoration: inherit">cru_filtered</a>,
+<a class="font-monospace link-light" href="cru_induced.html" style="color: #5c76ff;text-decoration: inherit">cru_induced</a>,
+<a class="font-monospace link-light" href="cru_mapreduced.html" style="color: #5c76ff;text-decoration: inherit">cru_mapreduced</a>,
+<a class="font-monospace link-light" href="cru_merged.html" style="color: #5c76ff;text-decoration: inherit">cru_merged</a>,
+<a class="font-monospace link-light" href="cru_mutated.html" style="color: #5c76ff;text-decoration: inherit">cru_mutated</a>,
+<a class="font-monospace link-light" href="cru_partition_of.html" style="color: #5c76ff;text-decoration: inherit">cru_partition_of</a>,
+<a class="font-monospace link-light" href="cru_postponed.html" style="color: #5c76ff;text-decoration: inherit">cru_postponed</a>,
+<a class="font-monospace link-light" href="cru_split.html" style="color: #5c76ff;text-decoration: inherit">cru_split</a>,
+and
+<a class="font-monospace link-light" href="cru_stretched.html" style="color: #5c76ff;text-decoration: inherit">cru_stretched</a>.
 </p>
 <h6 style="color: #ff5c5c;">FILES</h6>
 <p style="margin: 0px 40px 16px;">
-<em>/usr/local/include/cru/function_types.h</em>
-</p>
-<p style="margin: 0px 40px 16px;">
-<em>/usr/local/include/cru/data_types.h</em>
-</p>
-<p style="margin: 0px 40px 16px;">
-<em>/usr/local/include/cru/error_codes.h</em>
+<em>/usr/local/include/cru/cru.h</em>
 </p>
 <h6 style="color: #ff5c5c;">SEE ALSO</h6>
 <p style="margin: 0px 40px 16px;">
@@ -156,7 +124,6 @@ In any other context, it is an edge label.
 <a class="font-monospace link-light" href="cru_inducer.html" style="color: #5c76ff;text-decoration: inherit">cru_inducer</a>,
 <a class="font-monospace link-light" href="cru_kernel.html" style="color: #5c76ff;text-decoration: inherit">cru_kernel</a>,
 <a class="font-monospace link-light" href="cru_kill.html" style="color: #5c76ff;text-decoration: inherit">cru_kill</a>,
-<a class="font-monospace link-light" href="cru_killed.html" style="color: #5c76ff;text-decoration: inherit">cru_killed</a>,
 <a class="font-monospace link-light" href="cru_mapreduced.html" style="color: #5c76ff;text-decoration: inherit">cru_mapreduced</a>,
 <a class="font-monospace link-light" href="cru_mapreducer.html" style="color: #5c76ff;text-decoration: inherit">cru_mapreducer</a>,
 <a class="font-monospace link-light" href="cru_merged.html" style="color: #5c76ff;text-decoration: inherit">cru_merged</a>,
@@ -188,6 +155,7 @@ In any other context, it is an edge label.
 <a class="font-monospace link-light" href="cru_stretcher.html" style="color: #5c76ff;text-decoration: inherit">cru_stretcher</a>,
 <a class="font-monospace link-light" href="cru_subconnector.html" style="color: #5c76ff;text-decoration: inherit">cru_subconnector</a>,
 <a class="font-monospace link-light" href="cru_terminus_count.html" style="color: #5c76ff;text-decoration: inherit">cru_terminus_count</a>,
+<a class="font-monospace link-light" href="cru_top.html" style="color: #5c76ff;text-decoration: inherit">cru_top</a>,
 <a class="font-monospace link-light" href="cru_tpred.html" style="color: #5c76ff;text-decoration: inherit">cru_tpred</a>,
 <a class="font-monospace link-light" href="cru_united.html" style="color: #5c76ff;text-decoration: inherit">cru_united</a>,
 <a class="font-monospace link-light" href="cru_uop.html" style="color: #5c76ff;text-decoration: inherit">cru_uop</a>,
@@ -205,5 +173,5 @@ Dennis Furey
 </p>
 <div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.10.8</h5></div>
 <div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">January 21, 2023</h5></div>
-<div class="col-5 col-sm-5 col-md-4"><h5 class="text-end" style="color: var(--bs-gray);">CRU_TOP (7)</h5></div></div>
+<div class="col-5 col-sm-5 col-md-4"><h5 class="text-end" style="color: var(--bs-gray);">CRU_KILLED (3)</h5></div></div>
 </body>
