@@ -71,9 +71,11 @@ vertex.
 </p>
 <p style="margin: 0px 40px 16px;">
 If the zone consists of the whole graph because no initial vertex is specified,
-then the
+and if the
 <strong class="font-monospace" style="color: #45b74a;">backwards</strong>
-field is ignored and a forward orientation is inferred.
+field is non-zero, and if the initial vertex has no incident edges,
+then only the initial vertex is visited and the operation completes in
+constant time.
 </p>
 <h6 style="color: #ff5c5c;">ERRORS</h6>
 <p style="margin: 0px 40px 16px;">
@@ -222,7 +224,7 @@ Dennis Furey
 <p style="margin: 0px 40px 16px;">
 <a class="font-monospace link-light" href="https://github.com/gueststar/cru" style="color: #5c76ff;text-decoration: inherit;">https://github.com/gueststar/cru</a>
 </p>
-<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.10.25</h5></div>
-<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">May 17, 2024</h5></div>
+<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.10.26</h5></div>
+<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">July 29, 2024</h5></div>
 <div class="col-5 col-sm-5 col-md-4"><h5 class="text-end" style="color: var(--bs-gray);">CRU_ZONE (7)</h5></div></div>
 </body>
