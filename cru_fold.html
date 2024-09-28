@@ -31,6 +31,9 @@ typedef struct
 <strong class="font-monospace" style="color: #45b74a;">map</strong>;
 <br>
 <a class="font-monospace link-light" href="cru_bop.html" style="color: #5c76ff;text-decoration: inherit">&ensp;&ensp;&ensp;cru_bop</a>
+<strong class="font-monospace" style="color: #45b74a;">bmap</strong>;
+<br>
+<a class="font-monospace link-light" href="cru_bop.html" style="color: #5c76ff;text-decoration: inherit">&ensp;&ensp;&ensp;cru_bop</a>
 <strong class="font-monospace" style="color: #45b74a;">reduction</strong>;
 <br>
 <a class="font-monospace link-light" href="cru_nop.html" style="color: #5c76ff;text-decoration: inherit">&ensp;&ensp;&ensp;cru_nop</a>
@@ -59,11 +62,12 @@ graph.
 There are two main ways of organizing the computation. The simpler
 way starts with the
 <strong class="font-monospace" style="color: #45b74a;">map</strong>
+or the
+<strong class="font-monospace" style="color: #45b74a;">bmap</strong>
 function being applied to every member of the set of operands. Then
 the
 <strong class="font-monospace" style="color: #45b74a;">reduction</strong>
-is applied to pairs of result values returned by the
-<strong class="font-monospace" style="color: #45b74a;">map</strong>
+is applied to pairs of result values returned by it
 if there are more than one, which are discarded afterwards. Then the
 <strong class="font-monospace" style="color: #45b74a;">reduction</strong>
 is further applied to pairs of results obtained by previous reductions
@@ -74,6 +78,8 @@ result remains.
 <p style="margin: 0px 40px 16px;">
 In the other way of organizing the computation, the
 <strong class="font-monospace" style="color: #45b74a;">map</strong>
+or
+<strong class="font-monospace" style="color: #45b74a;">bmap</strong>
 is also applied initially to every member of the set, and in addition, the
 <strong class="font-monospace" style="color: #45b74a;">vacuous_case</strong>
 is evaluated. If there are any operands in the set, the
@@ -84,7 +90,6 @@ result as its left operand and the
 <strong class="font-monospace" style="color: #45b74a;">vacuous_case</strong>
 result as its right, both of which are discarded.
 While any unused
-<strong class="font-monospace" style="color: #45b74a;">map</strong>
 results remain, the
 <strong class="font-monospace" style="color: #45b74a;">reduction</strong>
 is evaluated with one of them as its left operand
@@ -137,6 +142,8 @@ must match its result type.
 </li><li>
 The
 <strong class="font-monospace" style="color: #45b74a;">map</strong>
+or
+<strong class="font-monospace" style="color: #45b74a;">bmap</strong>
 can have any result type, but the left operand type of the
 <strong class="font-monospace" style="color: #45b74a;">reduction</strong>
 must match it.
@@ -150,7 +157,9 @@ function reclaims results returned by the
 and the
 <strong class="font-monospace" style="color: #45b74a;">m_free</strong>
 function reclaims results returned by the
-<strong class="font-monospace" style="color: #45b74a;">map</strong>.
+<strong class="font-monospace" style="color: #45b74a;">map</strong>
+or
+<strong class="font-monospace" style="color: #45b74a;">bmap</strong>.
 These destructors must be suitable for their operand types. Either or
 both of these fields can be set to
 NULL,
@@ -160,15 +169,16 @@ infers that the corresponding result type is a scalar in no need of
 reclamation. Some other inferences are then possible:
 </p>
 <ul style="margin: 0px 40px 16px;"><li>
-If both the
-<strong class="font-monospace" style="color: #45b74a;">m_free</strong>
-and the
+If all of the
+<strong class="font-monospace" style="color: #45b74a;">m_free</strong>,
 <strong class="font-monospace" style="color: #45b74a;">map</strong>
+and
+<strong class="font-monospace" style="color: #45b74a;">bmap</strong>
 fields are
 NULL,
 then
 <a class="font-monospace link-light" href="cru.html" style="color: #5c76ff;text-decoration: inherit">cru</a>
-infers a default
+may infer a default
 <strong class="font-monospace" style="color: #45b74a;">map</strong>
 operator that unconditionally returns its middle operand.
 </li><li>
@@ -185,6 +195,30 @@ infers a default
 operator that returns the lesser of its two operands
 cast as unsigned integers.
 </li></ul>
+<p style="margin: 0px 40px 16px;">
+At most one
+<strong class="font-monospace" style="color: #45b74a;">map</strong>
+or
+<strong class="font-monospace" style="color: #45b74a;">bmap</strong>
+function may be defined in any
+<a class="font-monospace link-light" href="cru_fold.html" style="color: #5c76ff;text-decoration: inherit">cru_fold</a>.
+The
+<strong class="font-monospace" style="color: #45b74a;">bmap</strong>,
+being a
+<a class="font-monospace link-light" href="cru_bop.html" style="color: #5c76ff;text-decoration: inherit">cru_bop</a>,
+is expected to take
+only two operands and an error code as arguments,
+whereas the
+<strong class="font-monospace" style="color: #45b74a;">map</strong>,
+being a
+<a class="font-monospace link-light" href="cru_top.html" style="color: #5c76ff;text-decoration: inherit">cru_top</a>,
+is expected to take three operands and an error code.
+If a
+<strong class="font-monospace" style="color: #45b74a;">bmap</strong>
+is defined, it is passed only the left and middle operands
+that would have been passed to a
+<strong class="font-monospace" style="color: #45b74a;">map</strong>.
+</p>
 <h6 style="color: #ff5c5c;">ERRORS</h6>
 <p style="margin: 0px 40px 16px;">
 It is an error to omit a destructor when the corresponding result is
@@ -234,18 +268,6 @@ type conflicts are still an error but are not detected.
 </p>
 <h6 style="color: #ff5c5c;">NOTES</h6>
 <p style="margin: 0px 40px 16px;">
-The
-<a class="font-monospace link-light" href="cru_fold.html" style="color: #5c76ff;text-decoration: inherit">cru_fold</a>
-structure is part of the
-<a class="font-monospace link-light" href="cru_prop.html" style="color: #5c76ff;text-decoration: inherit">cru_prop</a>
-and
-<a class="font-monospace link-light" href="cru_kernel.html" style="color: #5c76ff;text-decoration: inherit">cru_kernel</a>
-derived structures,
-and the
-<a class="font-monospace link-light" href="cru_inducer.html" style="color: #5c76ff;text-decoration: inherit">cru_inducer</a>
-top level structure.
-</p>
-<p style="margin: 0px 40px 16px;">
 Applications should ensure that the vacuous case result is
 semantically appropriate for the reduction. For example, the sum of an
 empty set of numbers is zero, the product of an empty set of numbers
@@ -284,6 +306,50 @@ and
 if there is a
 <strong class="font-monospace" style="color: #45b74a;">vacuous_case</strong>
 defined, or must be associative and commutative otherwise.
+</p>
+<p style="margin: 0px 40px 16px;">
+The
+<a class="font-monospace link-light" href="cru_fold.html" style="color: #5c76ff;text-decoration: inherit">cru_fold</a>
+structure is part of the
+<a class="font-monospace link-light" href="cru_prop.html" style="color: #5c76ff;text-decoration: inherit">cru_prop</a>
+and
+<a class="font-monospace link-light" href="cru_kernel.html" style="color: #5c76ff;text-decoration: inherit">cru_kernel</a>
+derived structures,
+and the
+<a class="font-monospace link-light" href="cru_inducer.html" style="color: #5c76ff;text-decoration: inherit">cru_inducer</a>
+top level structure. Defining a
+<strong class="font-monospace" style="color: #45b74a;">bmap</strong>
+instead of a
+<strong class="font-monospace" style="color: #45b74a;">map</strong>
+is useful when an application requires a vertex mutation to depend on
+the incident or outgoing edges of the vertices, but it is prohibited
+from depending on adjacent vertices because the graph is cyclic and
+the traversal order therefore must be unconstrained. When the
+<a class="font-monospace link-light" href="cru_fold.html" style="color: #5c76ff;text-decoration: inherit">cru_fold</a>
+in the
+<strong class="font-monospace" style="color: #45b74a;">incident</strong>
+or
+<strong class="font-monospace" style="color: #45b74a;">outgoing</strong>
+field in a
+<a class="font-monospace link-light" href="cru_prop.html" style="color: #5c76ff;text-decoration: inherit">cru_prop</a>
+specifies a
+<strong class="font-monospace" style="color: #45b74a;">bmap</strong>
+instead of a
+<strong class="font-monospace" style="color: #45b74a;">map</strong>,
+and the
+<a class="font-monospace link-light" href="cru_prop.html" style="color: #5c76ff;text-decoration: inherit">cru_prop</a>
+is the
+<strong class="font-monospace" style="color: #45b74a;">v_op</strong>
+field in a
+<a class="font-monospace link-light" href="cru_kernel.html" style="color: #5c76ff;text-decoration: inherit">cru_kernel</a>
+that is the
+<strong class="font-monospace" style="color: #45b74a;">mu_kernel</strong>
+field in a
+<a class="font-monospace link-light" href="cru_mutator.html" style="color: #5c76ff;text-decoration: inherit">cru_mutator</a>,
+the
+<strong class="font-monospace" style="color: #45b74a;">bmap</strong>
+function's operands are the mutable vertex and the edge label,
+but not the adjacent vertex.
 </p>
 <h6 style="color: #ff5c5c;">EXAMPLE</h6>
 <p style="margin: 0px 40px 16px;">
@@ -415,7 +481,7 @@ Dennis Furey
 <p style="margin: 0px 40px 16px;">
 <a class="font-monospace link-light" href="https://github.com/gueststar/cru" style="color: #5c76ff;text-decoration: inherit;">https://github.com/gueststar/cru</a>
 </p>
-<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.14.0</h5></div>
-<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">September 22, 2024</h5></div>
+<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.15.0</h5></div>
+<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">September 28, 2024</h5></div>
 <div class="col-5 col-sm-5 col-md-4"><h5 class="text-end" style="color: var(--bs-gray);">CRU_FOLD (7)</h5></div></div>
 </body>
