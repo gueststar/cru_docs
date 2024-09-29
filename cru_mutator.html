@@ -126,6 +126,26 @@ unmodified edge label. In all other cases, the middle and right
 operands are in their initial unmodified forms.
 </li></ul>
 <p style="margin: 0px 40px 16px;">
+If a 
+<strong class="font-monospace" style="color: #45b74a;">mu_kernel.v_op.outgoing.bmap</strong>
+is defined instead of a
+<strong class="font-monospace" style="color: #45b74a;">mu_kernel.v_op.outgoing.map</strong>,
+then only the left and middle operands described above are available to it,
+with the right operand being irrelevant. Similar considerations apply to a
+<strong class="font-monospace" style="color: #45b74a;">mu_kernel.v_op.incident.bmap</strong>
+and a
+<strong class="font-monospace" style="color: #45b74a;">mu_kernel.e_op.bmap</strong>.
+However, the
+<strong class="font-monospace" style="color: #45b74a;">bmap</strong>
+in this context has the advantage of being usable even with
+unconstrained traversal priorities, unlike the
+<strong class="font-monospace" style="color: #45b74a;">map</strong>,
+because it makes vertex mutations expressible that depend on a vertex
+being visited and its edges but not on its adjacent vertices.
+Unconstrained traversal priorities are required for operations on
+cyclic graphs to avoid deadlock.
+</p>
+<p style="margin: 0px 40px 16px;">
 The zone orientation, as given by the
 <a class="font-monospace link-light" href="cru_zone.html" style="color: #5c76ff;text-decoration: inherit">cru_zone</a>
 in the
@@ -247,10 +267,10 @@ adjacent vertices or edges.
 </p>
 <p style="margin: 0px 40px 16px;">
 These conditions imply that vertices can be modified in a way that
-depends on adjacent vertices and edges only when the order is
-constrained, but cyclic graphs admit only unconstrained traversal
-orders. Applications may work around this limitation by performing
-the required operations in sequence through multiple calls to
+depends on adjacent vertices only when the order is constrained, but
+cyclic graphs admit only unconstrained traversal orders. Applications
+may work around this limitation by performing the required operations
+in sequence through multiple calls to
 <a class="font-monospace link-light" href="cru_mutated.html" style="color: #5c76ff;text-decoration: inherit">cru_mutated</a>,
 thereby implicity barrier synchronizing the operations as of each call.
 For example, modifying both the vertices and the edges in a cyclic
@@ -368,7 +388,7 @@ Dennis Furey
 <p style="margin: 0px 40px 16px;">
 <a class="font-monospace link-light" href="https://github.com/gueststar/cru" style="color: #5c76ff;text-decoration: inherit;">https://github.com/gueststar/cru</a>
 </p>
-<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.15.0</h5></div>
-<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">September 28, 2024</h5></div>
+<div class="row" style="height: 32px;padding: 20px 0px;"><div class="col-5 col-sm-5 col-md-4"><h5 style="color: var(--bs-gray);">CRU VERSION 0.15.1</h5></div>
+<div class="col-2 col-sm-2 col-md-4"><h5 class="text-center" style="color: var(--bs-gray);">September 29, 2024</h5></div>
 <div class="col-5 col-sm-5 col-md-4"><h5 class="text-end" style="color: var(--bs-gray);">CRU_MUTATOR (7)</h5></div></div>
 </body>
